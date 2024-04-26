@@ -32,6 +32,7 @@ wp_register_style('calendar-styles', plugin_dir_url(__FILE__) . 'css/calendar.cs
 
 remove_action('woocommerce_after_single_product_summary', 'woocommerce_output_related_products', 20);
 
+define('VITAL_SOWING_CALENDAR_INHERIT_CATEGORY', 1);
 
 // ACF helper functions
 
@@ -138,23 +139,29 @@ function vs_sowing_calendar()
 add_action('woocommerce_after_single_product_summary', 'vs_sowing_calendar', 3);
 
 
-// function default_start_month($value, $post_id, $field)
-// {
-// 	if ($value) return $value;
+function default_month($value, $post_id, $field)
+{
+	if ($value) return $value;
 
-// 	$product = wc_get_product($post_id);
-// 	$cats = wp_get_post_terms($product->id, 'product_cat');
+	$product = wc_get_product($post_id);
 
-// 	// Use last category, assumption that the last category is the most specific
-// 	$cat = $cats[array_key_last($cats)];
-// 	// Get the field value from the category if it exists
-// 	if (str_contains($cat->slug, 'seed') && $default = get_field($field['name'], $cat)) {
-// 		return $default;
-// 	}
-// 	// TODO: this currently overwrites the value on the product edit page,
-// 	// which means after save no longer inherits from the category
-// 	return $field;
-// }
+	// There is no product on a category page for example
+	if (!$product) return $field;
 
+	$cats = wp_get_post_terms($product->id, 'product_cat');
+	// Use last category, assumption that the last category is the most specific
+	$cat = $cats[array_key_last($cats)];
 
-// add_filter('acf/load_value/name=start_month', 'default_start_month', 10, 3);
+	// Get the field value from the category if it exists
+	if (str_contains($cat->slug, 'seed') && $default = get_field($field['name'], $cat)) {
+		if (!is_array($default)) return $default;
+	}
+	// TODO: this currently overwrites the value on the product edit page,
+	// which means after save no longer inherits from the category
+	return $value;
+}
+
+if (VITAL_SOWING_CALENDAR_INHERIT_CATEGORY && !is_admin()) {
+	add_filter('acf/load_value/name=start_month', 'default_month', 10, 3);
+	add_filter('acf/load_value/name=end_month', 'default_month', 10, 3);
+}
