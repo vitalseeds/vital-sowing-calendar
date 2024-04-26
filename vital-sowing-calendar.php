@@ -3,7 +3,7 @@
 /*
 Plugin Name:  Vital Sowing Calendar
 Plugin URI:   https://github.com/vitalseeds/vital-sowing-calendar
-Description:  Sowing, planting and harvesting calendar for WooCommerce products.
+Description:  Sowing, planting and harvesting calendar for Wordpress. Requires Advanced Custom Fields (ACF).
 Version:      2.0
 Author:       tombola
 Author URI:   https://github.com/tombola
@@ -54,6 +54,15 @@ if (acf_enabled()) {
 	{
 		return intval(get_group_field($group, $field, $post_id)) ?: null;
 	}
+} else {
+	function vital_calendar_admin_notice()
+	{
+		echo // Customize the message below as needed
+		'<div class="notice notice-warning is-dismissible">
+		<p>Vital Sowing calendar will not display unless Advanced Custom Fields plugin is installed.</p>
+		</div>';
+	}
+	add_action('admin_notices', 'vital_calendar_admin_notice');
 }
 
 
