@@ -106,6 +106,8 @@ function vs_sowing_calendar()
 {
 	if (!acf_enabled()) return;
 
+	// TODO: get_field does not yet show current value in preview
+	// https://support.advancedcustomfields.com/forums/topic/preview-with-acf-fields-are-incorrect
 	if (!get_field('sow_months') && !get_field('plant_months') && !get_field('harvest_months')) {
 		return;
 	}
@@ -134,6 +136,7 @@ function vs_sowing_calendar()
 }
 
 add_action('woocommerce_after_single_product_summary', 'vs_sowing_calendar', 3);
+
 
 // function default_start_month($value, $post_id, $field)
 // {
