@@ -110,7 +110,7 @@ add_action('acf/include_fields', function () {
             ),
             array(
                 'key' => 'field_661e4ffa42368',
-                'label' => 'Plant',
+                'label' => 'Transplant',
                 'name' => '',
                 'aria-label' => '',
                 'type' => 'tab',
@@ -127,7 +127,7 @@ add_action('acf/include_fields', function () {
             ),
             array(
                 'key' => 'field_661e503842369',
-                'label' => 'Plant in months',
+                'label' => 'Transplant in months',
                 'name' => 'plant_months',
                 'aria-label' => '',
                 'type' => 'group',
@@ -321,7 +321,7 @@ add_action('acf/include_fields', function () {
             // ),
             // array(
             //     'key' => 'field_6616b219f9eb6',
-            //     'label' => 'Plant start date',
+            //     'label' => 'Transplant start date',
             //     'name' => 'plant_start_date',
             //     'aria-label' => '',
             //     'type' => 'date_picker',
@@ -339,7 +339,7 @@ add_action('acf/include_fields', function () {
             // ),
             // array(
             //     'key' => 'field_6616b238f9eb7',
-            //     'label' => 'Plant end date',
+            //     'label' => 'Transplant end date',
             //     'name' => 'plant_end_date',
             //     'aria-label' => '',
             //     'type' => 'date_picker',
