@@ -38,6 +38,7 @@ remove_action('woocommerce_after_single_product_summary', 'woocommerce_output_re
 define('VITAL_SOWING_CALENDAR_INHERIT_CATEGORY', 1);
 
 define('VITAL_CALENDAR_FIELDS', array(
+	'enable_sowing_calendar' => "field_661e527bd3fc9",
 	'sow_months_start_month' => "field_661e4da48dcfe",
 	'sow_months_end_month' => "field_661e4dd38dcff",
 	'plant_months_start_month' => "field_661e50384236a",
@@ -115,21 +116,24 @@ function get_vs_calendar_row_cells(
 /**
  * Displays a sowing calendar for the product.
  */
-function vs_sowing_calendar()
+function vs_sowing_calendar($post_id = false)
 {
 	if (!acf_enabled()) return;
 
 	// TODO: get_field does not yet show current value in preview
 	// https://support.advancedcustomfields.com/forums/topic/preview-with-acf-fields-are-incorrect
 
+	if (!get_field('enable_sowing_calendar', $post_id)) {
+		return;
+	}
 	// If no months are set, don't display the calendar
 	if (
-		!get_field('sow_months_start_month') &&
-		!get_field('sow_months_end_month') &&
-		!get_field('plant_months_start_month') &&
-		!get_field('plant_months_end_month') &&
-		!get_field('harvest_months_start_month') &&
-		!get_field('harvest_months_end_month')
+		!get_field('sow_months_start_month', $post_id) &&
+		!get_field('sow_months_end_month', $post_id) &&
+		!get_field('plant_months_start_month', $post_id) &&
+		!get_field('plant_months_end_month', $post_id) &&
+		!get_field('harvest_months_start_month', $post_id) &&
+		!get_field('harvest_months_end_month', $post_id)
 	) {
 		return;
 	}
@@ -138,18 +142,18 @@ function vs_sowing_calendar()
 	$args = array(
 		'sowing_row' => @get_vs_calendar_row_cells(
 			'sow',
-			get_field('sow_months_start_month'),
-			get_field('sow_months_end_month'),
+			get_field('sow_months_start_month', $post_id),
+			get_field('sow_months_end_month', $post_id),
 		),
 		'plant_row' => @get_vs_calendar_row_cells(
 			'plant',
-			get_field('plant_months_start_month'),
-			get_field('plant_months_end_month'),
+			get_field('plant_months_start_month', $post_id),
+			get_field('plant_months_end_month', $post_id),
 		),
 		'harvest_row' => @get_vs_calendar_row_cells(
 			'harvest',
-			get_field('harvest_months_start_month'),
-			get_field('harvest_months_end_month'),
+			get_field('harvest_months_start_month', $post_id),
+			get_field('harvest_months_end_month', $post_id),
 		),
 	);
 	// TODO: use a template loader to make this themeable
@@ -165,7 +169,7 @@ add_action('woocommerce_before_main_content', function () {
 		$acf_fields = get_fields("term_$term->term_id");
 		get_field('enable_sowing_calendar', "term_$term->term_id");
 		get_field('sow_months_start_month', "term_$term->term_id");
-		vs_sowing_calendar();
+		vs_sowing_calendar("term_$term->term_id");
 	}
 });
 
@@ -180,6 +184,8 @@ function get_field_value_from_category($value, $post_id, $field)
 	// There is no product on a category page for example
 	if (!$product) return $field;
 
+	// Get the category of the product
+	// TODO: get and cache all custom fields for the category at once?
 	$cats = wp_get_post_terms($product->id, 'product_cat');
 	// Use last category, assumption that the last category is the most specific
 	$cat = $cats[array_key_last($cats)];
@@ -192,20 +198,9 @@ function get_field_value_from_category($value, $post_id, $field)
 }
 
 if (VITAL_SOWING_CALENDAR_INHERIT_CATEGORY && !is_admin()) {
-	// add_filter('acf/load_value', 'get_field_value_from_category', 10, 3);
-
-	// add_filter('acf/load_value/name=sow_months_start_month', 'get_field_value_from_category', 10, 3);
-	// add_filter('acf/load_value/name=sow_months_end_month', 'get_field_value_from_category', 10, 3);
-	// add_filter('acf/load_value/name=plant_months_start_month', 'get_field_value_from_category', 10, 3);
-	// add_filter('acf/load_value/name=plant_months_end_month', 'get_field_value_from_category', 10, 3);
-	// add_filter('acf/load_value/name=harvest_months_start_month', 'get_field_value_from_category', 10, 3);
-	// add_filter('acf/load_value/name=harvest_months_end_month', 'get_field_value_from_category', 10, 3);
-
-	// Use field keys instead of names to prevent conflicts
-	add_filter("acf/load_value/key=" . VITAL_CALENDAR_FIELDS['sow_months_start_month'], 'get_field_value_from_category', 10, 3);
-	add_filter("acf/load_value/key=" . VITAL_CALENDAR_FIELDS['sow_months_end_month'], 'get_field_value_from_category', 10, 3);
-	add_filter("acf/load_value/key=" . VITAL_CALENDAR_FIELDS['plant_months_start_month'], 'get_field_value_from_category', 10, 3);
-	add_filter("acf/load_value/key=" . VITAL_CALENDAR_FIELDS['plant_months_end_month'], 'get_field_value_from_category', 10, 3);
-	add_filter("acf/load_value/key=" . VITAL_CALENDAR_FIELDS['harvest_months_start_month'], 'get_field_value_from_category', 10, 3);
-	add_filter("acf/load_value/key=" . VITAL_CALENDAR_FIELDS['harvest_months_end_month'], 'get_field_value_from_category', 10, 3);
+	// Default each calendar field value to that of the category
+	// Uses field keys instead of names to prevent conflicts
+	foreach (VITAL_CALENDAR_FIELDS as $field_name => $field_key) {
+		add_filter("acf/load_value/key=$field_key", 'get_field_value_from_category', 10, 3);
+	}
 }
