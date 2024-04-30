@@ -30,8 +30,12 @@ Domain Path:  /languages
 
 
 
-
 wp_register_style('calendar-styles', plugin_dir_url(__FILE__) . 'css/calendar.css');
+
+add_action('wp_enqueue_scripts', function () {
+	wp_enqueue_style('calendar-styles');
+});
+
 
 remove_action('woocommerce_after_single_product_summary', 'woocommerce_output_related_products', 20);
 
@@ -137,7 +141,6 @@ function vs_sowing_calendar($post_id = false)
 	) {
 		return;
 	}
-	wp_enqueue_style('calendar-styles');
 
 	$args = array(
 		'sowing_row' => @get_vs_calendar_row_cells(
