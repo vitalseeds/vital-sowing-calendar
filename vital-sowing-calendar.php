@@ -32,9 +32,12 @@ Domain Path:  /languages
 
 wp_register_style('calendar-styles', plugin_dir_url(__FILE__) . 'css/calendar.css');
 
-add_action('wp_enqueue_scripts', function () {
+
+function vital_calendar_enqueue_styles()
+{
 	wp_enqueue_style('calendar-styles');
-});
+}
+add_action('wp_enqueue_scripts', 'vital_calendar_enqueue_styles');
 
 
 remove_action('woocommerce_after_single_product_summary', 'woocommerce_output_related_products', 20);
