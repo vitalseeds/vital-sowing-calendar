@@ -164,7 +164,6 @@ function vs_sowing_calendar($post_id = false)
 add_action('woocommerce_after_single_product_summary', 'vs_sowing_calendar', 3);
 add_action('woocommerce_before_main_content', function () {
 	if (is_product_category()) {
-		echo '<p>This is a <strong>custom</strong> description added programmatically.</p>';
 		$term = get_queried_object();
 		$acf_fields = get_fields("term_$term->term_id");
 		get_field('enable_sowing_calendar', "term_$term->term_id");
