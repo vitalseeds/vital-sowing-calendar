@@ -170,7 +170,7 @@ add_action('woocommerce_before_main_content', function () {
 });
 
 
-function get_category_month($value, $post_id, $field)
+function get_field_value_from_category($value, $post_id, $field)
 {
 	if ($value) return $value;
 
@@ -192,20 +192,20 @@ function get_category_month($value, $post_id, $field)
 }
 
 if (VITAL_SOWING_CALENDAR_INHERIT_CATEGORY && !is_admin()) {
-	// add_filter('acf/load_value', 'get_category_month', 10, 3);
+	// add_filter('acf/load_value', 'get_field_value_from_category', 10, 3);
 
-	// add_filter('acf/load_value/name=sow_months_start_month', 'get_category_month', 10, 3);
-	// add_filter('acf/load_value/name=sow_months_end_month', 'get_category_month', 10, 3);
-	// add_filter('acf/load_value/name=plant_months_start_month', 'get_category_month', 10, 3);
-	// add_filter('acf/load_value/name=plant_months_end_month', 'get_category_month', 10, 3);
-	// add_filter('acf/load_value/name=harvest_months_start_month', 'get_category_month', 10, 3);
-	// add_filter('acf/load_value/name=harvest_months_end_month', 'get_category_month', 10, 3);
+	// add_filter('acf/load_value/name=sow_months_start_month', 'get_field_value_from_category', 10, 3);
+	// add_filter('acf/load_value/name=sow_months_end_month', 'get_field_value_from_category', 10, 3);
+	// add_filter('acf/load_value/name=plant_months_start_month', 'get_field_value_from_category', 10, 3);
+	// add_filter('acf/load_value/name=plant_months_end_month', 'get_field_value_from_category', 10, 3);
+	// add_filter('acf/load_value/name=harvest_months_start_month', 'get_field_value_from_category', 10, 3);
+	// add_filter('acf/load_value/name=harvest_months_end_month', 'get_field_value_from_category', 10, 3);
 
 	// Use field keys instead of names to prevent conflicts
-	add_filter("acf/load_value/key=" . VITAL_CALENDAR_FIELDS['sow_months_start_month'], 'get_category_month', 10, 3);
-	add_filter("acf/load_value/key=" . VITAL_CALENDAR_FIELDS['sow_months_end_month'], 'get_category_month', 10, 3);
-	add_filter("acf/load_value/key=" . VITAL_CALENDAR_FIELDS['plant_months_start_month'], 'get_category_month', 10, 3);
-	add_filter("acf/load_value/key=" . VITAL_CALENDAR_FIELDS['plant_months_end_month'], 'get_category_month', 10, 3);
-	add_filter("acf/load_value/key=" . VITAL_CALENDAR_FIELDS['harvest_months_start_month'], 'get_category_month', 10, 3);
-	add_filter("acf/load_value/key=" . VITAL_CALENDAR_FIELDS['harvest_months_end_month'], 'get_category_month', 10, 3);
+	add_filter("acf/load_value/key=" . VITAL_CALENDAR_FIELDS['sow_months_start_month'], 'get_field_value_from_category', 10, 3);
+	add_filter("acf/load_value/key=" . VITAL_CALENDAR_FIELDS['sow_months_end_month'], 'get_field_value_from_category', 10, 3);
+	add_filter("acf/load_value/key=" . VITAL_CALENDAR_FIELDS['plant_months_start_month'], 'get_field_value_from_category', 10, 3);
+	add_filter("acf/load_value/key=" . VITAL_CALENDAR_FIELDS['plant_months_end_month'], 'get_field_value_from_category', 10, 3);
+	add_filter("acf/load_value/key=" . VITAL_CALENDAR_FIELDS['harvest_months_start_month'], 'get_field_value_from_category', 10, 3);
+	add_filter("acf/load_value/key=" . VITAL_CALENDAR_FIELDS['harvest_months_end_month'], 'get_field_value_from_category', 10, 3);
 }
