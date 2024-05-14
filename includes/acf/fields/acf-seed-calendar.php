@@ -382,6 +382,13 @@ add_action('acf/include_fields', function () {
                     'value' => 'product',
                 ),
             ),
+            array(
+                array(
+                    'param' => 'taxonomy',
+                    'operator' => '==',
+                    'value' => 'product_cat',
+                ),
+            ),
         ),
         'menu_order' => 0,
         'position' => 'normal',
