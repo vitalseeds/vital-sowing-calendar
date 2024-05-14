@@ -209,3 +209,59 @@ if (VITAL_SOWING_CALENDAR_INHERIT_CATEGORY && !is_admin()) {
 		add_filter("acf/load_value/key=$field_key", 'get_field_value_from_category', 10, 3);
 	}
 }
+
+function my_acf_admin_head()
+{ ?>
+	<style type="text/css">
+		/* hide the checkbox */
+		.acf-field-664343b5fb761 input {
+			display: none !important;
+			height: 40px;
+			width: 30px;
+		}
+
+		/* display list items horizontally */
+		.acf-field-664343b5fb761 ul li {
+			display: inline-block;
+			line-height: 40px;
+			margin-bottom: 10px;
+		}
+
+		/* style the (clickable) checkbox label */
+		.acf-field-664343b5fb761 li label {
+			display: inline-block !important;
+			border-radius: 6px 0 0 6px;
+			background: #dddddd;
+			height: 40px;
+			width: 30px;
+			margin-right: -4px;
+			line-height: 40px;
+			text-align: center;
+			cursor: pointer;
+			/* move the month name across both start/mid month */
+			text-indent: 20px;
+			word-wrap: normal;
+		}
+
+		/* hide the text of the mid month checkbox */
+		.acf-field-664343b5fb761 li:nth-child(2n) label {
+			border-radius: 0 6px 6px 0;
+			margin-right: 5px;
+			height: 40px;
+			color: transparent;
+			/* make the mid month transparent so can read underlying month name */
+			opacity: 50%;
+		}
+
+		/* highlight selected month part */
+		.acf-field-664343b5fb761 li label:has(input[type=checkbox]:checked) {
+			background: #2AD705;
+		}
+	</style>
+<?php }
+
+// ACF admin tweaks inspired :
+// https://devmaverick.com/how-to-add-basic-style-to-the-advanced-custom-fields-acf-back-end/
+// https://codepen.io/steelwater/pen/BjeZQx
+
+add_action('acf/input/admin_head', 'my_acf_admin_head');
