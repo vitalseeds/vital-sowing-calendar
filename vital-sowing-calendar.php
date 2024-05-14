@@ -211,8 +211,11 @@ if (VITAL_SOWING_CALENDAR_INHERIT_CATEGORY && !is_admin()) {
 }
 
 function my_acf_admin_head()
-{
-	include('includes/admin-styles.html');
+{ ?>
+	<style type="text/css">
+		<?php include('includes/admin-styles.css'); ?>
+	</style>
+<?php
 }
 
 // ACF admin tweaks inspired :
