@@ -1,7 +1,7 @@
 
 #acf-group_664343b4f3856 {
     /* hide the checkbox */
-    input {
+    input[type=checkbox]{
         display: none !important;
         height: 40px;
         width: 30px;
