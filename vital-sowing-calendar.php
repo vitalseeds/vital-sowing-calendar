@@ -45,13 +45,43 @@ remove_action('woocommerce_after_single_product_summary', 'woocommerce_output_re
 define('VITAL_SOWING_CALENDAR_INHERIT_CATEGORY', 1);
 
 define('VITAL_CALENDAR_FIELDS', array(
-	'sow_months_start_month' => "field_661e4da48dcfe",
-	'sow_months_end_month' => "field_661e4dd38dcff",
-	'plant_months_start_month' => "field_661e50384236a",
-	'plant_months_end_month' => "field_661e50384236b",
-	'harvest_months_start_month' => "field_661e50f6576ba",
-	'harvest_months_end_month' => "field_661e50f6576bb",
 	'enable_sowing_calendar' => "field_664377a727bda",
+
+	'vs_calendar_sow_month_parts' => 'field_664343b5fb761',
+	'vs_calendar_plant_month_parts' => 'field_66436615d6cc8',
+	'vs_calendar_harvest_month_parts' => 'field_66436639d6cc9',
+
+	'vs_calendar_other1_month_parts' => 'field_6643685092a3f',
+	'vs_calendar_other1_label' => 'field_664368ca92a41',
+	'vs_calendar_other2_month_parts' => 'field_664368a492a40',
+	'vs_calendar_other2_label' => 'field_6643690f92a42',
+));
+
+define('VITAL_MONTH_CHOICES', array(
+	'jan1' => 'Jan',
+	'jan2' => 'Jan',
+	'feb1' => 'Feb',
+	'feb2' => 'Feb',
+	'mar1' => 'Mar',
+	'mar2' => 'Mar',
+	'apr1' => 'Apr',
+	'apr2' => 'Apr',
+	'may1' => 'May',
+	'may2' => 'May',
+	'jun1' => 'Jun',
+	'jun2' => 'Jun',
+	'jul1' => 'Jul',
+	'jul2' => 'Jul',
+	'aug1' => 'Aug',
+	'aug2' => 'Aug',
+	'sep1' => 'Sep',
+	'sep2' => 'Sep',
+	'oct1' => 'Oct',
+	'oct2' => 'Oct',
+	'nov1' => 'Nov',
+	'nov2' => 'Nov',
+	'dec1' => 'Dec',
+	'dec2' => 'Dec',
 ));
 
 // ACF helper functions
@@ -93,26 +123,24 @@ if (acf_enabled()) {
  * Expects the start and end date fields to be in the format 'dd/mm/yyyy'.
  *
  * @param string $action		eg sow, plant, harvest
- * @param string $start_month	the start date field
+ * @param string $month	the start date field
  * @param string $end_month		the end date field
  * @return string				the row of cells (td elements)
  */
 function get_vs_calendar_row_cells(
 	$action,
-	$start_month,
-	$end_month
+	$selected_months,
 ) {
-	if (!$start_month || !$end_month) {
+	if (!$selected_months) {
 		return '';
 	}
 	$row = [];
-	for ($i = 1; $i <= 12; $i++) {
-		$month = date('F', mktime(0, 0, 0, $i, 10));
-		$month_class = strtolower($month);
+	foreach (VITAL_MONTH_CHOICES as $key => $month_name) {
+		$month_class = strtolower($month_name);
 		$hl_class = '';
-		if ($i >= $start_month && $i <= $end_month) {
+		if (in_array($key, $selected_months)) {
 			$hl_class .= ' highlight highlight-' . $action;
-			$title = "title='$action in $month'";
+			$title = "title='$action in $month_name'";
 		}
 		$row[] = "<td class='$month_class $hl_class' $title></td>";
 	}
@@ -135,12 +163,9 @@ function vs_sowing_calendar($post_id = false)
 	}
 	// If no months are set, don't display the calendar
 	if (
-		!get_field('sow_months_start_month', $post_id) &&
-		!get_field('sow_months_end_month', $post_id) &&
-		!get_field('plant_months_start_month', $post_id) &&
-		!get_field('plant_months_end_month', $post_id) &&
-		!get_field('harvest_months_start_month', $post_id) &&
-		!get_field('harvest_months_end_month', $post_id)
+		!get_field('vs_calendar_sow_month_parts', $post_id) &&
+		!get_field('vs_calendar_plant_month_parts', $post_id) &&
+		!get_field('vs_calendar_harvest_month_parts', $post_id)
 	) {
 		return;
 	}
@@ -148,18 +173,15 @@ function vs_sowing_calendar($post_id = false)
 	$args = array(
 		'sowing_row' => @get_vs_calendar_row_cells(
 			'sow',
-			get_field('sow_months_start_month', $post_id),
-			get_field('sow_months_end_month', $post_id),
+			get_field('vs_calendar_sow_month_parts', $post_id),
 		),
 		'plant_row' => @get_vs_calendar_row_cells(
 			'plant',
-			get_field('plant_months_start_month', $post_id),
-			get_field('plant_months_end_month', $post_id),
+			get_field('vs_calendar_plant_month_parts', $post_id),
 		),
 		'harvest_row' => @get_vs_calendar_row_cells(
 			'harvest',
-			get_field('harvest_months_start_month', $post_id),
-			get_field('harvest_months_end_month', $post_id),
+			get_field('vs_calendar_harvest_month_parts', $post_id),
 		),
 	);
 	// TODO: use a template loader to make this themeable
@@ -173,7 +195,7 @@ add_action('woocommerce_before_main_content', function () {
 		$term = get_queried_object();
 		$acf_fields = get_fields("term_$term->term_id");
 		get_field('enable_sowing_calendar', "term_$term->term_id");
-		get_field('sow_months_start_month', "term_$term->term_id");
+		get_field('vs_calendar_sow_month_parts', "term_$term->term_id");
 		vs_sowing_calendar("term_$term->term_id");
 	}
 });

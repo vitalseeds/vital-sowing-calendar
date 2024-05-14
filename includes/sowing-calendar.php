@@ -4,18 +4,18 @@
 		<thead>
 			<tr class="">
 				<th class="calendar-label">Month</th>
-				<th class="calendar-label--month" title="January">J</th>
-				<th class="calendar-label--month" title="February">F</th>
-				<th class="calendar-label--month" title="March">M</th>
-				<th class="calendar-label--month" title="April">A</th>
-				<th class="calendar-label--month" title="May">M</th>
-				<th class="calendar-label--month" title="June">J</th>
-				<th class="calendar-label--month" title="July">J</th>
-				<th class="calendar-label--month" title="August">A</th>
-				<th class="calendar-label--month" title="September">S</th>
-				<th class="calendar-label--month" title="October">O</th>
-				<th class="calendar-label--month" title="November">N</th>
-				<th class="calendar-label--month" title="December">D</th>
+				<th colspan="2" class="calendar-label--month" title="January">J</th>
+				<th colspan="2" class="calendar-label--month" title="February">F</th>
+				<th colspan="2" class="calendar-label--month" title="March">M</th>
+				<th colspan="2" class="calendar-label--month" title="April">A</th>
+				<th colspan="2" class="calendar-label--month" title="May">M</th>
+				<th colspan="2" class="calendar-label--month" title="June">J</th>
+				<th colspan="2" class="calendar-label--month" title="July">J</th>
+				<th colspan="2" class="calendar-label--month" title="August">A</th>
+				<th colspan="2" class="calendar-label--month" title="September">S</th>
+				<th colspan="2" class="calendar-label--month" title="October">O</th>
+				<th colspan="2" class="calendar-label--month" title="November">N</th>
+				<th colspan="2" class="calendar-label--month" title="December">D</th>
 			</tr>
 		</thead>
 		<tbody>

@@ -21,13 +21,19 @@
     border: solid 1px #DDEEEE;
     color: #336B6B;
     padding: 10px;
-    text-align: left;
+    text-align: center;
     /* text-shadow: 1px 1px 1px #fff; */
 }
 .sowing-calendar tbody td {
 	border: solid 1px #DDEEEE;
-    color: #333;
-    padding: 10px;
+  color: #333;
+  padding: 10px;
+}
+.sowing-calendar tbody td:nth-child(even) {
+	border-right: none;
+}
+.sowing-calendar tbody td:nth-child(odd) {
+	border-left: none;
 }
 .vs-calendar table.sowing-calendar tr td.highlight {
 	border-left-color: rgba(0,0,0,.05);
