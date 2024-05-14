@@ -45,13 +45,13 @@ remove_action('woocommerce_after_single_product_summary', 'woocommerce_output_re
 define('VITAL_SOWING_CALENDAR_INHERIT_CATEGORY', 1);
 
 define('VITAL_CALENDAR_FIELDS', array(
-	'enable_sowing_calendar' => "field_661e527bd3fc9",
 	'sow_months_start_month' => "field_661e4da48dcfe",
 	'sow_months_end_month' => "field_661e4dd38dcff",
 	'plant_months_start_month' => "field_661e50384236a",
 	'plant_months_end_month' => "field_661e50384236b",
 	'harvest_months_start_month' => "field_661e50f6576ba",
 	'harvest_months_end_month' => "field_661e50f6576bb",
+	'enable_sowing_calendar' => "field_664377a727bda",
 ));
 
 // ACF helper functions

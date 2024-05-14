@@ -4,6 +4,26 @@
         "title": "Sowing Calendar",
         "fields": [
             {
+                "key": "field_664377a727bda",
+                "label": "",
+                "name": "enable_sowing_calendar",
+                "aria-label": "",
+                "type": "true_false",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "message": "enable",
+                "default_value": 0,
+                "ui": 0,
+                "ui_on_text": "",
+                "ui_off_text": ""
+            },
+            {
                 "key": "field_664366634898a",
                 "label": "Sow",
                 "name": "",

@@ -7,6 +7,12 @@
         width: 30px;
     }
 
+    .acf-true-false input {
+        display: inline-block !important;
+        height: 1rem;
+        width: 1rem;
+    }
+
     /* display list items horizontally */
     ul li {
         display: inline-block;

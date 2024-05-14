@@ -10,6 +10,26 @@ add_action('acf/include_fields', function () {
         'title' => 'Sowing Calendar',
         'fields' => array(
             array(
+                'key' => 'field_664377a727bda',
+                'label' => '',
+                'name' => 'enable_sowing_calendar',
+                'aria-label' => '',
+                'type' => 'true_false',
+                'instructions' => '',
+                'required' => 0,
+                'conditional_logic' => 0,
+                'wrapper' => array(
+                    'width' => '',
+                    'class' => '',
+                    'id' => '',
+                ),
+                'message' => 'enable',
+                'default_value' => 0,
+                'ui' => 0,
+                'ui_on_text' => '',
+                'ui_off_text' => '',
+            ),
+            array(
                 'key' => 'field_664366634898a',
                 'label' => 'Sow',
                 'name' => '',
