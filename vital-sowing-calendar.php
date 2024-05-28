@@ -162,10 +162,14 @@ function vs_sowing_calendar($post_id = false)
 	if (!$enabled && !is_null($enabled)) return;
 
 	// If no months are set, don't display the calendar
+	$vs_calendar_sow_month_parts = get_field('vs_calendar_sow_month_parts', $post_id);
+	$vs_calendar_plant_month_parts = get_field('vs_calendar_plant_month_parts', $post_id);
+	$vs_calendar_harvest_month_parts = get_field('vs_calendar_harvest_month_parts', $post_id);
+
 	if (
-		!get_field('vs_calendar_sow_month_parts', $post_id) &&
-		!get_field('vs_calendar_plant_month_parts', $post_id) &&
-		!get_field('vs_calendar_harvest_month_parts', $post_id)
+		!$vs_calendar_sow_month_parts &&
+		!$vs_calendar_plant_month_parts &&
+		!$vs_calendar_harvest_month_parts
 	) {
 		return;
 	}
@@ -173,15 +177,15 @@ function vs_sowing_calendar($post_id = false)
 	$args = array(
 		'sowing_row' => @get_vs_calendar_row_cells(
 			'sow',
-			get_field('vs_calendar_sow_month_parts', $post_id),
+			$vs_calendar_sow_month_parts,
 		),
 		'plant_row' => @get_vs_calendar_row_cells(
 			'plant',
-			get_field('vs_calendar_plant_month_parts', $post_id),
+			$vs_calendar_plant_month_parts,
 		),
 		'harvest_row' => @get_vs_calendar_row_cells(
 			'harvest',
-			get_field('vs_calendar_harvest_month_parts', $post_id),
+			$vs_calendar_harvest_month_parts,
 		),
 	);
 	// TODO: use a template loader to make this themeable
@@ -216,7 +220,7 @@ function get_field_value_from_category($value, $post_id, $field)
 		// Get the ACF field value from the category (if it exists)
 		// if (str_contains($cat->slug, 'seed') && $default = get_field($field['name'], $cat)) {
 		if ($default = get_field($field['name'], $cat)) {
-			if (!is_array($default)) return $default;
+			return $default;
 		}
 	}
 
