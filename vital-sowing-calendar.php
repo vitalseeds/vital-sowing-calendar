@@ -193,9 +193,9 @@ add_action('woocommerce_after_single_product_summary', 'vs_sowing_calendar', 3);
 add_action('woocommerce_before_main_content', function () {
 	if (is_product_category()) {
 		$term = get_queried_object();
-		$acf_fields = get_fields("term_$term->term_id");
-		get_field('enable_sowing_calendar', "term_$term->term_id");
-		get_field('vs_calendar_sow_month_parts', "term_$term->term_id");
+
+		// get_field('enable_sowing_calendar', "term_$term->term_id");
+		// get_field('vs_calendar_sow_month_parts', "term_$term->term_id");
 		vs_sowing_calendar("term_$term->term_id");
 	}
 });
@@ -203,24 +203,23 @@ add_action('woocommerce_before_main_content', function () {
 
 function get_field_value_from_category($value, $post_id, $field)
 {
-	if ($value) return $value;
+	// Don't override existing product values
+	if ($value || is_product_category()) return $value;
 
-	$product = wc_get_product($post_id);
-	// is_string($post_id) && str_starts_with($post_id, 'term');
-
-	// There is no product on a category page for example
-	if (!$product) return $field;
-
-	// Get the category of the product
-	// TODO: get and cache all custom fields for the category at once?
-	$cats = wp_get_post_terms($product->id, 'product_cat');
-	// Use last category, assumption that the last category is the most specific
-	$cat = $cats[array_key_last($cats)];
-
-	// Get the field value from the category (if it exists)
-	if (str_contains($cat->slug, 'seed') && $default = get_field($field['name'], $cat)) {
-		if (!is_array($default)) return $default;
+	if (is_product()) {
+		$product = wc_get_product($post_id);
+		// Get the category of the product
+		// TODO: get and cache all custom fields for the category at once?
+		$cats = wp_get_post_terms($product->id, 'product_cat');
+		// Use last category, assumption that the last category is the most specific
+		$cat = $cats[array_key_last($cats)];
+		// Get the ACF field value from the category (if it exists)
+		// if (str_contains($cat->slug, 'seed') && $default = get_field($field['name'], $cat)) {
+		if ($default = get_field($field['name'], $cat)) {
+			if (!is_array($default)) return $default;
+		}
 	}
+
 	return $value;
 }
 
