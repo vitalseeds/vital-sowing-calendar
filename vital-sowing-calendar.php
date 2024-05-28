@@ -158,8 +158,8 @@ function vs_sowing_calendar($post_id = false)
 	// TODO: get_field does not yet show current value in preview
 	// https://support.advancedcustomfields.com/forums/topic/preview-with-acf-fields-are-incorrect
 
-	$enabled = get_field('enable_sowing_calendar', $post_id);
-	if (!$enabled && !is_null($enabled)) return;
+	// $enabled = get_field('enable_sowing_calendar', $post_id);
+	// if (!$enabled && !is_null($enabled)) return;
 
 	// If no months are set, don't display the calendar
 	$vs_calendar_sow_month_parts = get_field('vs_calendar_sow_month_parts', $post_id);
