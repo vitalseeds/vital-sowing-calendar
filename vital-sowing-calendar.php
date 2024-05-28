@@ -158,9 +158,6 @@ function vs_sowing_calendar($post_id = false)
 	// TODO: get_field does not yet show current value in preview
 	// https://support.advancedcustomfields.com/forums/topic/preview-with-acf-fields-are-incorrect
 
-	if (!get_field('enable_sowing_calendar', $post_id)) {
-		return;
-	}
 	$enabled = get_field('enable_sowing_calendar', $post_id);
 	if (!$enabled && !is_null($enabled)) return;
 
