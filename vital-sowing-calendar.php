@@ -231,16 +231,16 @@ if (VITAL_SOWING_CALENDAR_INHERIT_CATEGORY && !is_admin()) {
 	}
 }
 
-function my_acf_admin_head()
-{ ?>
+// ACF admin tweaks inspired by:
+// https://devmaverick.com/how-to-add-basic-style-to-the-advanced-custom-fields-acf-back-end/
+// https://codepen.io/steelwater/pen/BjeZQx
+function vital_acf_admin_head()
+{
+	echo "acf admin head";
+?>
 	<style type="text/css">
 		<?php include('includes/admin-styles.css'); ?>
 	</style>
 <?php
 }
-
-// ACF admin tweaks inspired :
-// https://devmaverick.com/how-to-add-basic-style-to-the-advanced-custom-fields-acf-back-end/
-// https://codepen.io/steelwater/pen/BjeZQx
-
-add_action('acf/input/admin_head', 'my_acf_admin_head');
+add_action('acf/input/admin_head', 'vital_acf_admin_head');

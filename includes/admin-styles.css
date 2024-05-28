@@ -1,5 +1,24 @@
+:root {
+    --highlight-sow:  rgb(253, 238, 28);
+    --highlight-plant: rgb(118, 200, 51);
+    --highlight-harvest: rgb(216, 107, 1);
+    --highlight-color: var(--highlight-plant);
+}
 
-#acf-group_664343b4f3856 {
+tr[data-name="vs_calendar_sow_month_parts"], div[data-name="vs_calendar_sow_month_parts"] {
+    --highlight-color: var(--highlight-sow);
+}
+tr[data-name="vs_calendar_plant_month_parts"], div[data-name="vs_calendar_plant_month_parts"] {
+    --highlight-color: var(--highlight-plant);
+}
+tr[data-name="vs_calendar_harvest_month_parts"], div[data-name="vs_calendar_harvest_month_parts"] {
+    --highlight-color: var(--highlight-harvest);
+}
+
+#acf-group_664343b4f3856,
+tr[data-name="vs_calendar_sow_month_parts"],
+tr[data-name="vs_calendar_plant_month_parts"],
+tr[data-name="vs_calendar_harvest_month_parts"] {
     /* hide the checkbox */
     input[type=checkbox]{
         display: none !important;
@@ -48,6 +67,6 @@
 
     /* highlight selected month part */
     li label:has(input[type=checkbox]:checked) {
-        background: #2AD705;
+        background: var(--highlight-color);
     }
 }

@@ -1,6 +1,12 @@
 /* Sowing calendar */
 /* * { outline: 1px solid red; } */
 
+:root {
+    --highlight-sow:  rgb(253, 238, 28);
+    --highlight-plant: rgb(118, 200, 51);
+    --highlight-harvest: rgb(216, 107, 1);
+}
+
 .vs-calendar.summary {
 	min-width: fit-content;
 }
@@ -43,13 +49,13 @@
 	filter: brightness(110%);
 }
 .vs-calendar table.sowing-calendar tr td.highlight-sow {
-	background: rgb(253, 238, 28);
+	background: var(--highlight-sow);
 }
 .vs-calendar table.sowing-calendar tr td.highlight-plant {
-	background: rgb(118, 200, 51);
+	background: var(--highlight-plant);
 }
 .vs-calendar table.sowing-calendar tr td.highlight-harvest {
-	background: rgb(216, 107, 1);
+	background: var(--highlight-harvest);
 }
 @media (max-width:568px) {
 	.sowing-calendar thead th:not(.calendar-label), .sowing-calendar tbody td:not(.calendar-label) {
