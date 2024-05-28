@@ -24,7 +24,7 @@ add_action('acf/include_fields', function () {
                     'id' => '',
                 ),
                 'message' => 'enable',
-                'default_value' => 0,
+                'default_value' => 1,
                 'ui' => 0,
                 'ui_on_text' => '',
                 'ui_off_text' => '',

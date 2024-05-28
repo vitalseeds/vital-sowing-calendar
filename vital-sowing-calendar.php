@@ -161,6 +161,9 @@ function vs_sowing_calendar($post_id = false)
 	if (!get_field('enable_sowing_calendar', $post_id)) {
 		return;
 	}
+	$enabled = get_field('enable_sowing_calendar', $post_id);
+	if (!$enabled && !is_null($enabled)) return;
+
 	// If no months are set, don't display the calendar
 	if (
 		!get_field('vs_calendar_sow_month_parts', $post_id) &&
