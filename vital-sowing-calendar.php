@@ -44,19 +44,6 @@ remove_action('woocommerce_after_single_product_summary', 'woocommerce_output_re
 
 define('VITAL_SOWING_CALENDAR_INHERIT_CATEGORY', 1);
 
-define('VITAL_CALENDAR_FIELDS', array(
-	'enable_sowing_calendar' => "field_664377a727bda",
-
-	'vs_calendar_sow_month_parts' => 'field_664343b5fb761',
-	'vs_calendar_plant_month_parts' => 'field_66436615d6cc8',
-	'vs_calendar_harvest_month_parts' => 'field_66436639d6cc9',
-
-	'vs_calendar_other1_month_parts' => 'field_6643685092a3f',
-	'vs_calendar_other1_label' => 'field_664368ca92a41',
-	'vs_calendar_other2_month_parts' => 'field_664368a492a40',
-	'vs_calendar_other2_label' => 'field_6643690f92a42',
-));
-
 define('VITAL_MONTH_CHOICES', array(
 	'jan1' => 'Jan',
 	'jan2' => 'Jan',
@@ -154,6 +141,10 @@ function get_vs_calendar_row_cells(
 function vs_sowing_calendar($post_id = false)
 {
 	if (!acf_enabled()) return;
+	if (!$post_id && is_product()) {
+		$post_id = get_the_ID();
+	}
+
 
 	// TODO: get_field does not yet show current value in preview
 	// https://support.advancedcustomfields.com/forums/topic/preview-with-acf-fields-are-incorrect
@@ -162,9 +153,12 @@ function vs_sowing_calendar($post_id = false)
 	// if (!$enabled && !is_null($enabled)) return;
 
 	// If no months are set, don't display the calendar
-	$vs_calendar_sow_month_parts = get_field('vs_calendar_sow_month_parts', $post_id);
-	$vs_calendar_plant_month_parts = get_field('vs_calendar_plant_month_parts', $post_id);
-	$vs_calendar_harvest_month_parts = get_field('vs_calendar_harvest_month_parts', $post_id);
+	// $vs_calendar_sow_month_parts = get_field('vs_calendar_sow_month_parts', $post_id);
+	// $vs_calendar_plant_month_parts = get_field('vs_calendar_plant_month_parts', $post_id);
+	// $vs_calendar_harvest_month_parts = get_field('vs_calendar_harvest_month_parts', $post_id);
+	$vs_calendar_sow_month_parts = get_value_from_field_or_category('vs_calendar_sow_month_parts', $post_id);
+	$vs_calendar_plant_month_parts = get_value_from_field_or_category('vs_calendar_plant_month_parts', $post_id);
+	$vs_calendar_harvest_month_parts = get_value_from_field_or_category('vs_calendar_harvest_month_parts', $post_id);
 
 	if (
 		!$vs_calendar_sow_month_parts &&
@@ -204,6 +198,14 @@ add_action('woocommerce_before_main_content', function () {
 	}
 });
 
+function get_value_from_field_or_category($field_name, $post_id)
+{
+	$value = get_field($field_name, $post_id);
+	if (VITAL_SOWING_CALENDAR_INHERIT_CATEGORY) {
+		$value = get_field_value_from_category($value, $post_id, $field_name);
+	}
+	return $value;
+};
 
 function get_field_value_from_category($value, $post_id, $field)
 {
@@ -213,26 +215,18 @@ function get_field_value_from_category($value, $post_id, $field)
 	if (is_product()) {
 		$product = wc_get_product($post_id);
 		// Get the category of the product
-		// TODO: get and cache all custom fields for the category at once?
 		$cats = wp_get_post_terms($product->id, 'product_cat');
 		// Use last category, assumption that the last category is the most specific
 		$cat = $cats[array_key_last($cats)];
+		// If called direct, rather than from ACF hook, the field will just be name
+		$field_name = is_array($field) ? $field['name'] : $field;
 		// Get the ACF field value from the category (if it exists)
-		// if (str_contains($cat->slug, 'seed') && $default = get_field($field['name'], $cat)) {
-		if ($default = get_field($field['name'], $cat)) {
+		if ($default = get_field($field_name, $cat)) {
 			return $default;
 		}
 	}
 
 	return $value;
-}
-
-if (VITAL_SOWING_CALENDAR_INHERIT_CATEGORY && !is_admin()) {
-	// Default each calendar field value to that of the category
-	// Uses field keys instead of names to prevent conflicts
-	foreach (VITAL_CALENDAR_FIELDS as $field_name => $field_key) {
-		add_filter("acf/load_value/key=$field_key", 'get_field_value_from_category', 10, 3);
-	}
 }
 
 // ACF admin tweaks inspired by:
