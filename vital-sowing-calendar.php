@@ -211,7 +211,7 @@ function get_field_value_from_category($value, $post_id, $field)
 	if (is_product()) {
 		$product = wc_get_product($post_id);
 		// Get the category of the product
-		$cats = wp_get_post_terms($product->id, 'product_cat');
+		$cats = wp_get_post_terms($product->get_id(), 'product_cat');
 		// Use last category, assumption that the last category is the most specific
 		$cat = $cats[array_key_last($cats)];
 		// If called direct, rather than from ACF hook, the field will just be name
