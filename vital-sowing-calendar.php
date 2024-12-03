@@ -184,14 +184,16 @@ function vs_sowing_calendar($post_id = false)
 	include('includes/sowing-calendar.php');
 }
 
-add_action('woocommerce_after_single_product_summary', 'vs_sowing_calendar', 3);
-add_action('woocommerce_archive_description', function () {
-	if (is_product_category()) {
-		$term = get_queried_object();
-		echo "<h4>Growing calendar</h4>";
-		vs_sowing_calendar("term_$term->term_id");
-	}
-}, 10);
+
+// Moved to the theme
+// add_action('woocommerce_after_single_product_summary', 'vs_sowing_calendar', 3);
+// add_action('woocommerce_archive_description', function () {
+// 	if (is_product_category()) {
+// 		$term = get_queried_object();
+// 		echo "<h4>Growing calendar</h4>";
+// 		vs_sowing_calendar("term_$term->term_id");
+// 	}
+// }, 10);
 
 
 function get_value_from_field_or_category($field_name, $post_id)
@@ -228,9 +230,10 @@ function get_field_value_from_category($value, $post_id, $field)
 // ACF admin tweaks inspired by:
 // https://devmaverick.com/how-to-add-basic-style-to-the-advanced-custom-fields-acf-back-end/
 // https://codepen.io/steelwater/pen/BjeZQx
+
+
 function vital_acf_admin_head()
 {
-	echo "acf admin head";
 ?>
 	<style type="text/css">
 		<?php include('includes/admin-styles.css'); ?>
