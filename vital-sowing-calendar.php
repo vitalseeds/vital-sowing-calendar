@@ -29,12 +29,9 @@ Domain Path:  /languages
 // add_action('wp_enqueue_scripts', 'my_theme_enqueue_styles');
 
 
-
-wp_register_style('calendar-styles', plugin_dir_url(__FILE__) . 'css/calendar.css');
-
-
 function vital_calendar_enqueue_styles()
 {
+	wp_register_style('calendar-styles', plugin_dir_url(__FILE__) . 'css/calendar.css');
 	wp_enqueue_style('calendar-styles');
 }
 add_action('wp_enqueue_scripts', 'vital_calendar_enqueue_styles');
