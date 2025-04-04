@@ -226,7 +226,8 @@ function get_field_value_from_category($value, $post_id, $field)
 	// Don't override existing product values
 	if ($value || is_product_category()) return $value;
 
-	if (is_product()) {
+
+	if (is_product() || wc_get_product($post_id)) {
 		$product = wc_get_product($post_id);
 		// Get the category of the product
 		$cats = wp_get_post_terms($product->get_id(), 'product_cat');
@@ -258,6 +259,14 @@ function vital_acf_admin_head()
 }
 add_action('acf/input/admin_head', 'vital_acf_admin_head');
 
+/**
+ * Shortcode to display seeds that can be sown in a specified month.
+ *
+ * Usage: [sow_by_month month="jan"]
+ *
+ * @param array $atts Shortcode attributes.
+ * @return string HTML output.
+ */
 function sow_by_month_shortcode($atts)
 {
 	// Extract the months attribute from the shortcode
@@ -265,50 +274,63 @@ function sow_by_month_shortcode($atts)
 		'month' => '',
 	), $atts);
 	$month = strtolower(trim($atts['month']));
-	$month_parts = [$month . "1", $month . "2"];
-	$valid_month_parts = array_intersect($month_parts, array_keys(VITAL_MONTH_CHOICES));
-	if (empty($valid_month_parts)) {
-		return '<p>Please provide valid months (e.g., jan1, jan2, feb1, etc.) as the "months" attribute, separated by commas.</p>';
-	}
+	$cache_key = 'sow_by_month__' . $month;
+	$output = get_transient($cache_key);
 
-	$month_full_name = isset(VITAL_MONTH_FULL_NAMES[$month]) ? VITAL_MONTH_FULL_NAMES[$month] : ucfirst($month);
-	echo "<h2>Seeds to sow in $month_full_name</h2>";
+	// if (false === $output) {
+	if (true) {
+		// ob_start();
 
-	// Query all products under the 'Seeds' category
-	$args = array(
-		'post_type' => 'product',
-		'posts_per_page' => -1,
-		'tax_query' => array(
-			array(
-				'taxonomy' => 'product_cat',
-				'field'    => 'slug',
-				'terms'    => 'seeds',
-			),
-		),
-	);
-
-	$query = new WP_Query($args);
-	$output = '<ul>';
-
-	if ($query->have_posts()) {
-		while ($query->have_posts()) {
-			$query->the_post();
-			$post_id = get_the_ID();
-
-			// Get the sowing months for the product
-			$sow_months = get_value_from_field_or_category('vs_calendar_sow_month_parts', $post_id);
-
-			// Check if the product can be sown in any of the given months
-			if (is_array($sow_months) && array_intersect($valid_month_parts, $sow_months)) {
-				$output .= '<li>' . get_the_title() . '</li>';
-			}
+		$month_parts = [$month . "1", $month . "2"];
+		$valid_month_parts = array_intersect($month_parts, array_keys(VITAL_MONTH_CHOICES));
+		if (empty($valid_month_parts)) {
+			return '<p>Please provide valid months (e.g., jan, feb, etc.) as the "months" attribute, separated by commas.</p>';
 		}
-		wp_reset_postdata();
-	} else {
-		$output .= '<li>No seeds available for the selected months.</li>';
+
+		$month_full_name = isset(VITAL_MONTH_FULL_NAMES[$month]) ? VITAL_MONTH_FULL_NAMES[$month] : ucfirst($month);
+		$output = "<h2>Seeds to sow in $month_full_name</h2>";
+
+		// Query all products under the 'Seeds' category
+		$args = array(
+			'post_type' => 'product',
+			'posts_per_page' => -1,
+			'tax_query' => array(
+				array(
+					'taxonomy' => 'product_cat',
+					'field'    => 'slug',
+					'terms'    => 'seeds',
+				),
+			),
+		);
+		$query = new WP_Query($args);
+		$output .= '<ul>';
+		// $month_products = [];
+		if ($query->have_posts()) {
+			while ($query->have_posts()) {
+				$query->the_post();
+				$post_id = get_the_ID();
+
+				// Get the sowing months for the product
+				$sow_months = get_value_from_field_or_category('vs_calendar_sow_month_parts', $post_id);
+				// $posts[] = get_post($post_id);
+				// Check if the product can be sown in any of the given months
+				if (is_array($sow_months) && array_intersect($valid_month_parts, $sow_months)) {
+					$output .= '<li>' . get_the_title() . '</li>';
+				}
+			}
+			wp_reset_postdata();
+		} else {
+			$output .= '<li>No seeds available for the selected months.</li>';
+		}
+		$output .= '</ul>';
+
+		// $output = ob_get_clean();
+		// Cache for 24 hours
+		set_transient($cache_key, $output, 24 * HOUR_IN_SECONDS);
+
+		return $output;
 	}
 
-	$output .= '</ul>';
 	return $output;
 }
 add_shortcode('sow_by_month', 'sow_by_month_shortcode');
