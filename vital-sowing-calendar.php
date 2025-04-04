@@ -68,6 +68,22 @@ define('VITAL_MONTH_CHOICES', array(
 	'dec2' => 'Dec',
 ));
 
+// Map abbreviated month to full month name
+define('VITAL_MONTH_FULL_NAMES', array(
+	'jan' => 'January',
+	'feb' => 'February',
+	'mar' => 'March',
+	'apr' => 'April',
+	'may' => 'May',
+	'jun' => 'June',
+	'jul' => 'July',
+	'aug' => 'August',
+	'sep' => 'September',
+	'oct' => 'October',
+	'nov' => 'November',
+	'dec' => 'December',
+));
+
 // ACF helper functions
 
 function acf_enabled()
@@ -241,3 +257,58 @@ function vital_acf_admin_head()
 <?php
 }
 add_action('acf/input/admin_head', 'vital_acf_admin_head');
+
+function sow_by_month_shortcode($atts)
+{
+	// Extract the months attribute from the shortcode
+	$atts = shortcode_atts(array(
+		'month' => '',
+	), $atts);
+	$month = strtolower(trim($atts['month']));
+	$month_parts = [$month . "1", $month . "2"];
+	$valid_month_parts = array_intersect($month_parts, array_keys(VITAL_MONTH_CHOICES));
+	if (empty($valid_month_parts)) {
+		return '<p>Please provide valid months (e.g., jan1, jan2, feb1, etc.) as the "months" attribute, separated by commas.</p>';
+	}
+
+	$month_full_name = isset(VITAL_MONTH_FULL_NAMES[$month]) ? VITAL_MONTH_FULL_NAMES[$month] : ucfirst($month);
+	echo "<h2>Seeds to sow in $month_full_name</h2>";
+
+	// Query all products under the 'Seeds' category
+	$args = array(
+		'post_type' => 'product',
+		'posts_per_page' => -1,
+		'tax_query' => array(
+			array(
+				'taxonomy' => 'product_cat',
+				'field'    => 'slug',
+				'terms'    => 'seeds',
+			),
+		),
+	);
+
+	$query = new WP_Query($args);
+	$output = '<ul>';
+
+	if ($query->have_posts()) {
+		while ($query->have_posts()) {
+			$query->the_post();
+			$post_id = get_the_ID();
+
+			// Get the sowing months for the product
+			$sow_months = get_value_from_field_or_category('vs_calendar_sow_month_parts', $post_id);
+
+			// Check if the product can be sown in any of the given months
+			if (is_array($sow_months) && array_intersect($valid_month_parts, $sow_months)) {
+				$output .= '<li>' . get_the_title() . '</li>';
+			}
+		}
+		wp_reset_postdata();
+	} else {
+		$output .= '<li>No seeds available for the selected months.</li>';
+	}
+
+	$output .= '</ul>';
+	return $output;
+}
+add_shortcode('sow_by_month', 'sow_by_month_shortcode');
