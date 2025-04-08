@@ -341,7 +341,8 @@ function categories_by_month($month_parts) {
  * @return string HTML output.
  */
 function sow_by_month_shortcode($atts, $type = 'product') {
-	$cache_disabled = true;
+	// $cache_disabled = true;
+	$cache_disabled = false;
 	$atts = shortcode_atts(array(
 		'month' => '',
 	), $atts);
