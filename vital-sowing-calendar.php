@@ -297,6 +297,41 @@ function products_by_month($month_parts) {
 	return ob_get_clean();
 }
 
+function categories_by_month($month_parts) {
+	// Query all categories under the 'Seeds' category
+	$seed_category = get_term_by('slug', 'seeds', 'product_cat');
+	if (!$seed_category) {
+		return '';
+	}
+
+	$args = array(
+		'taxonomy'   => 'product_cat',
+		'child_of'   => $seed_category->term_id,
+		'hide_empty' => false,
+	);
+	$categories = get_categories($args);
+	$month_categories = [];
+
+	foreach ($categories as $category) {
+		$sow_months = get_field('vs_calendar_sow_month_parts', 'product_cat_' . $category->term_id);
+		// Check if the category can be sown in any of the given months
+		if (is_array($sow_months) && array_intersect($month_parts, $sow_months)) {
+			$month_categories[] = $category;
+		}
+	}
+
+	if (empty($month_categories)) {
+		return '';
+	}
+
+	ob_start();
+	get_template_part('parts/calendar', 'month-categories', array(
+		'categories' => $month_categories,
+		'show_images' => true,
+	));
+	return ob_get_clean();
+}
+
 /**
  * Shortcode to display seeds that can be sown in a specified month.
  *
@@ -341,4 +376,8 @@ function product_by_month_shortcode($atts) {
 	return sow_by_month_shortcode($atts, 'product');
 }
 
-add_shortcode('sow_by_month', 'product_by_month_shortcode');
+function category_by_month_shortcode($atts) {
+	return sow_by_month_shortcode($atts, 'category');
+}
+
+add_shortcode('sow_by_month', 'category_by_month_shortcode');
