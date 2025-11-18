@@ -11,6 +11,29 @@ if (!defined('ABSPATH')) {
 }
 
 /**
+ * Render category name cell for calendar table
+ *
+ * @param object $category The category object
+ * @param bool $is_first_row Whether this is the first row for this category
+ * @return string HTML for the category name cell
+ */
+function vs_render_category_name_cell($category, $is_first_row)
+{
+	$category_link = get_term_link($category);
+	ob_start();
+?>
+	<td class="calendar-label category-name">
+		<?php if ($is_first_row) : ?>
+			<a href="<?php echo esc_url($category_link); ?>">
+				<?php echo esc_html($category->name); ?>
+			</a>
+		<?php endif; ?>
+	</td>
+<?php
+	return ob_get_clean();
+}
+
+/**
  * Render all seed categories with their sowing calendars
  *
  * Displays a stacked list of all seed categories (children of term ID 276)
@@ -104,7 +127,6 @@ function vs_render_all_categories_calendar()
 					<?php
 					$first_category = true;
 					foreach ($categories_with_calendar as $category) :
-						$category_link = get_term_link($category);
 						$post_id = "term_" . $category->term_id;
 
 						// Get calendar data for this category
@@ -117,27 +139,20 @@ function vs_render_all_categories_calendar()
 						$plant_row = get_vs_calendar_row_cells('plant', $plant_months);
 						$harvest_row = get_vs_calendar_row_cells('harvest', $harvest_months);
 
-						// Count non-empty rows
-						$rows = array_filter([$sow_row, $plant_row, $harvest_row]);
-						$row_count = count($rows);
-
 						// Add separator row between categories (bold line)
 						if (!$first_category) {
 							echo '<tr class="category-separator"><td colspan="26"></td></tr>';
 						}
 						$first_category = false;
 
+						// Track if this is the first row for this category
+						$first_row = true;
+
 						// Sow row
 						if (!empty($sow_row)) :
 					?>
 							<tr>
-								<?php if ($row_count > 0) : ?>
-									<td class="calendar-label category-name" rowspan="<?php echo $row_count; ?>">
-										<a href="<?php echo esc_url($category_link); ?>">
-											<?php echo esc_html($category->name); ?>
-										</a>
-									</td>
-								<?php endif; ?>
+								<?php echo vs_render_category_name_cell($category, $first_row); $first_row = false; ?>
 								<td class="calendar-label">Sow</td>
 								<?php echo $sow_row; ?>
 							</tr>
@@ -145,6 +160,7 @@ function vs_render_all_categories_calendar()
 
 						<?php if (!empty($plant_row)) : ?>
 							<tr>
+								<?php echo vs_render_category_name_cell($category, $first_row); $first_row = false; ?>
 								<td class="calendar-label">Plant</td>
 								<?php echo $plant_row; ?>
 							</tr>
@@ -152,6 +168,7 @@ function vs_render_all_categories_calendar()
 
 						<?php if (!empty($harvest_row)) : ?>
 							<tr>
+								<?php echo vs_render_category_name_cell($category, $first_row); $first_row = false; ?>
 								<td class="calendar-label">Harvest</td>
 								<?php echo $harvest_row; ?>
 							</tr>
@@ -192,7 +209,12 @@ function vs_render_all_categories_calendar()
 			padding: 0.5rem;
 			min-width: 150px;
 		}
-
+		.sowing-calendar-all .category-name:not(:empty) {
+			border: none;
+		}
+		table tbody tr:nth-child(2n) td {
+			background-color:inherit;
+		}
 		.sowing-calendar-all .category-name a {
 			color: #333;
 			text-decoration: none;
@@ -211,6 +233,21 @@ function vs_render_all_categories_calendar()
 			border-top: 3px solid #333;
 			padding: 0;
 			height: 3px;
+		}
+
+		/* Fix border alignment - offset by 2 because of Category + Month columns */
+		.sowing-calendar-all tbody td:nth-child(even) {
+			border-right: solid 1px #DDEEEE;
+			border-left: none;
+		}
+		.sowing-calendar-all tbody td:nth-child(odd) {
+			border-left: solid 1px #DDEEEE;
+			border-right: none;
+		}
+		/* First two columns (Category, Month) should have normal borders */
+		.sowing-calendar-all tbody td:nth-child(1),
+		.sowing-calendar-all tbody td:nth-child(2) {
+			border: solid 1px #DDEEEE !important;
 		}
 
 		@media (max-width: 768px) {
