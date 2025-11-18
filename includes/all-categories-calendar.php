@@ -11,6 +11,67 @@ if (!defined('ABSPATH')) {
 }
 
 /**
+ * Get current month parts (e.g., ['mar1', 'mar2'])
+ *
+ * @return array Array of month part strings for current month
+ */
+function vs_get_current_month_parts()
+{
+	$current_month = strtolower(date('M')); // 'jan', 'feb', etc.
+	return [$current_month . '1', $current_month . '2'];
+}
+
+/**
+ * Get top-level seed categories (direct children of Seeds term 276)
+ *
+ * @return array Array of WP_Term objects
+ */
+function vs_get_top_level_seed_categories()
+{
+	$args = array(
+		'taxonomy'   => 'product_cat',
+		'parent'     => 276,  // Direct children only (not child_of which gets all descendants)
+		'hide_empty' => false,
+		'orderby'    => 'name',
+		'order'      => 'ASC',
+	);
+	return get_categories($args);
+}
+
+/**
+ * Filter categories by action and month
+ *
+ * @param array $categories Array of category objects
+ * @param string $action Action type ('sow', 'plant', or 'harvest')
+ * @param array $month_parts Array of month parts (e.g., ['jan1', 'jan2'])
+ * @return array Filtered array of categories
+ */
+function vs_filter_categories_by_action_month($categories, $action, $month_parts)
+{
+	if (empty($action) || empty($month_parts)) {
+		return $categories;
+	}
+
+	// Determine which ACF field to check based on action
+	$field_map = [
+		'sow' => 'vs_calendar_sow_month_parts',
+		'plant' => 'vs_calendar_plant_month_parts',
+		'harvest' => 'vs_calendar_harvest_month_parts',
+	];
+
+	if (!isset($field_map[$action])) {
+		return $categories;
+	}
+
+	$field_name = $field_map[$action];
+
+	return array_filter($categories, function ($category) use ($field_name, $month_parts) {
+		$category_months = get_field($field_name, 'product_cat_' . $category->term_id);
+		return is_array($category_months) && array_intersect($month_parts, $category_months);
+	});
+}
+
+/**
  * Render category name cell for calendar table
  *
  * @param object $category The category object
@@ -47,8 +108,13 @@ function vs_render_category_name_cell($category, $is_first_row)
  */
 function vs_render_all_categories_calendar()
 {
-	// Check for cached version
-	$cache_key = 'vs_all_categories_calendar';
+	// Get filter parameters from URL
+	$filter_category = isset($_GET['filter_category']) ? sanitize_text_field($_GET['filter_category']) : '';
+	$filter_action = isset($_GET['filter_action']) ? sanitize_text_field($_GET['filter_action']) : '';
+	$filter_month = isset($_GET['filter_month']) ? sanitize_text_field($_GET['filter_month']) : '';
+
+	// Check for cached version with filters
+	$cache_key = 'vs_all_categories_calendar_' . md5(serialize($_GET));
 	$output = get_transient($cache_key);
 
 	// if (false !== $output) {
@@ -58,16 +124,35 @@ function vs_render_all_categories_calendar()
 	// Start output buffering
 	ob_start();
 
-	// Get all seed categories (children of Seeds parent term ID 276)
-	$args = array(
-		'taxonomy'   => 'product_cat',
-		'child_of'   => 276,  // Seeds parent ID
-		'hide_empty' => false,
-		'orderby'    => 'name',
-		'order'      => 'ASC',
-	);
-
-	$categories = get_categories($args);
+	// Apply category filter if set
+	if (!empty($filter_category)) {
+		$category = get_term_by('slug', $filter_category, 'product_cat');
+		if ($category) {
+			// Get the selected category AND all its descendants
+			$args = array(
+				'taxonomy'   => 'product_cat',
+				'child_of'   => $category->term_id,  // Get all descendants
+				'hide_empty' => false,
+				'orderby'    => 'name',
+				'order'      => 'ASC',
+			);
+			$categories = get_categories($args);
+			// Add the parent category itself to the list
+			array_unshift($categories, $category);
+		} else {
+			$categories = [];
+		}
+	} else {
+		// Get all seed categories (children of Seeds parent term ID 276)
+		$args = array(
+			'taxonomy'   => 'product_cat',
+			'child_of'   => 276,  // Seeds parent ID
+			'hide_empty' => false,
+			'orderby'    => 'name',
+			'order'      => 'ASC',
+		);
+		$categories = get_categories($args);
+	}
 
 	if (empty($categories)) {
 		echo '<p>No seed categories found.</p>';
@@ -92,16 +177,122 @@ function vs_render_all_categories_calendar()
 		}
 	}
 
+	// Apply action + month filter if set
+	// Note: Both action AND month must be set for this filter to work
+	// This is because we need to know which calendar field to check (sow/plant/harvest)
+	// and which months to look for
+	if (!empty($filter_action) && !empty($filter_month)) {
+		// Convert month to month parts
+		if ($filter_month === 'current') {
+			$month_parts = vs_get_current_month_parts();
+		} else {
+			$month_parts = [$filter_month . '1', $filter_month . '2'];
+		}
+
+		$categories_with_calendar = vs_filter_categories_by_action_month(
+			$categories_with_calendar,
+			$filter_action,
+			$month_parts
+		);
+	} elseif (!empty($filter_action)) {
+		// If only action is set, show all categories that have that action defined
+		$field_map = [
+			'sow' => 'vs_calendar_sow_month_parts',
+			'plant' => 'vs_calendar_plant_month_parts',
+			'harvest' => 'vs_calendar_harvest_month_parts',
+		];
+
+		if (isset($field_map[$filter_action])) {
+			$field_name = $field_map[$filter_action];
+			$categories_with_calendar = array_filter($categories_with_calendar, function ($category) use ($field_name) {
+				$months = get_field($field_name, 'product_cat_' . $category->term_id);
+				return is_array($months) && !empty($months);
+			});
+		}
+	} elseif (!empty($filter_month)) {
+		// If only month is set, show all categories that have ANY action in that month
+		if ($filter_month === 'current') {
+			$month_parts = vs_get_current_month_parts();
+		} else {
+			$month_parts = [$filter_month . '1', $filter_month . '2'];
+		}
+
+		$categories_with_calendar = array_filter($categories_with_calendar, function ($category) use ($month_parts) {
+			$sow = get_field('vs_calendar_sow_month_parts', 'product_cat_' . $category->term_id);
+			$plant = get_field('vs_calendar_plant_month_parts', 'product_cat_' . $category->term_id);
+			$harvest = get_field('vs_calendar_harvest_month_parts', 'product_cat_' . $category->term_id);
+
+			return (is_array($sow) && array_intersect($month_parts, $sow)) ||
+				(is_array($plant) && array_intersect($month_parts, $plant)) ||
+				(is_array($harvest) && array_intersect($month_parts, $harvest));
+		});
+	}
+
 	if (empty($categories_with_calendar)) {
-		echo '<p>No seed categories with sowing calendar data found.</p>';
+		echo '<p>No seed categories found matching the selected filters.</p>';
 		return ob_get_clean();
 	}
+
+	// Get top-level categories for dropdown
+	$top_level_categories = vs_get_top_level_seed_categories();
 
 	// Render the page as one big table
 ?>
 	<div class="vs-all-categories-calendar">
 		<h1 class="page-title">Sowing Calendars</h1>
 		<p class="page-description">View sowing, planting, and harvesting times for all seed categories.</p>
+
+		<!-- Filter Form -->
+		<form method="get" action="" class="calendar-filters">
+			<div class="filter-row">
+				<div class="filter-field">
+					<label for="filter_category">Category:</label>
+					<select name="filter_category" id="filter_category">
+						<option value="">All Categories</option>
+						<?php foreach ($top_level_categories as $cat) : ?>
+							<option value="<?php echo esc_attr($cat->slug); ?>" <?php selected($filter_category, $cat->slug); ?>>
+								<?php echo esc_html($cat->name); ?>
+							</option>
+						<?php endforeach; ?>
+					</select>
+				</div>
+
+				<div class="filter-field">
+					<label for="filter_action">Action:</label>
+					<select name="filter_action" id="filter_action">
+						<option value="">All Actions</option>
+						<option value="sow" <?php selected($filter_action, 'sow'); ?>>Sow</option>
+						<option value="plant" <?php selected($filter_action, 'plant'); ?>>Plant</option>
+						<option value="harvest" <?php selected($filter_action, 'harvest'); ?>>Harvest</option>
+					</select>
+				</div>
+
+				<div class="filter-field">
+					<label for="filter_month">Month:</label>
+					<select name="filter_month" id="filter_month">
+						<option value="">All Months</option>
+						<option value="current" <?php selected($filter_month, 'current'); ?>>This Month</option>
+						<option value="jan" <?php selected($filter_month, 'jan'); ?>>January</option>
+						<option value="feb" <?php selected($filter_month, 'feb'); ?>>February</option>
+						<option value="mar" <?php selected($filter_month, 'mar'); ?>>March</option>
+						<option value="apr" <?php selected($filter_month, 'apr'); ?>>April</option>
+						<option value="may" <?php selected($filter_month, 'may'); ?>>May</option>
+						<option value="jun" <?php selected($filter_month, 'jun'); ?>>June</option>
+						<option value="jul" <?php selected($filter_month, 'jul'); ?>>July</option>
+						<option value="aug" <?php selected($filter_month, 'aug'); ?>>August</option>
+						<option value="sep" <?php selected($filter_month, 'sep'); ?>>September</option>
+						<option value="oct" <?php selected($filter_month, 'oct'); ?>>October</option>
+						<option value="nov" <?php selected($filter_month, 'nov'); ?>>November</option>
+						<option value="dec" <?php selected($filter_month, 'dec'); ?>>December</option>
+					</select>
+				</div>
+
+				<div class="filter-field">
+					<button type="submit" class="button">Apply Filters</button>
+					<a href="<?php echo esc_url(strtok($_SERVER['REQUEST_URI'], '?')); ?>" class="button">Clear</a>
+				</div>
+			</div>
+		</form>
 
 		<div class="vs-calendar summary">
 			<table class="sowing-calendar sowing-calendar-all">
@@ -195,7 +386,69 @@ function vs_render_all_categories_calendar()
 
 		.page-description {
 			color: #666;
+			margin-bottom: 1rem;
+		}
+
+		/* Filter Form Styles */
+		.calendar-filters {
+			background: #f5f5f5;
+			padding: 1.5rem;
+			border-radius: 8px;
 			margin-bottom: 2rem;
+		}
+
+		.filter-row {
+			display: flex;
+			gap: 1rem;
+			align-items: flex-end;
+			flex-wrap: wrap;
+		}
+
+		.filter-field {
+			display: flex;
+			flex-direction: column;
+			gap: 0.5rem;
+		}
+
+		.filter-field label {
+			font-weight: 600;
+			font-size: 0.9rem;
+			color: #333;
+		}
+
+		.filter-field select {
+			padding: 0.5rem;
+			border: 1px solid #ddd;
+			border-radius: 4px;
+			font-size: 1rem;
+			min-width: 180px;
+		}
+
+		.filter-field button,
+		.filter-field .button {
+			padding: 0.5rem 1rem;
+			background: #118800;
+			color: white;
+			border: none;
+			border-radius: 4px;
+			cursor: pointer;
+			text-decoration: none;
+			display: inline-block;
+			font-size: 1rem;
+		}
+
+		.filter-field button:hover,
+		.filter-field .button:hover {
+			background: #0d6600;
+		}
+
+		.filter-field .button {
+			background: #666;
+			margin-left: 0.5rem;
+		}
+
+		.filter-field .button:hover {
+			background: #444;
 		}
 
 		.sowing-calendar-all {
