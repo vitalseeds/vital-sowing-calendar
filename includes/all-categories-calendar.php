@@ -243,6 +243,7 @@ function vs_render_all_categories_calendar()
 		<p class="page-description">View sowing, planting, and harvesting times for all seed categories.</p>
 
 		<!-- Filter Form -->
+		<details class="growingguide vs-calendar-filters"><summary>Filters</summary><div>
 		<form method="get" action="" class="calendar-filters">
 			<div class="filter-row">
 				<div class="filter-field">
@@ -293,6 +294,7 @@ function vs_render_all_categories_calendar()
 				</div>
 			</div>
 		</form>
+		</div></details>
 
 		<div class="vs-calendar summary">
 			<table class="sowing-calendar sowing-calendar-all">
@@ -390,11 +392,9 @@ function vs_render_all_categories_calendar()
 		}
 
 		/* Filter Form Styles */
+
 		.calendar-filters {
-			background: #f5f5f5;
-			padding: 1.5rem;
-			border-radius: 8px;
-			margin-bottom: 2rem;
+			width: 100%;
 		}
 
 		.filter-row {
@@ -417,7 +417,7 @@ function vs_render_all_categories_calendar()
 		}
 
 		.filter-field select {
-			padding: 0.5rem;
+			padding: 0.3rem;
 			border: 1px solid #ddd;
 			border-radius: 4px;
 			font-size: 1rem;
@@ -426,7 +426,7 @@ function vs_render_all_categories_calendar()
 
 		.filter-field button,
 		.filter-field .button {
-			padding: 0.5rem 1rem;
+			padding: 0.3rem 0.5rem;
 			background: #118800;
 			color: white;
 			border: none;
