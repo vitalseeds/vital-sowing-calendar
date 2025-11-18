@@ -28,9 +28,9 @@ function vs_render_all_categories_calendar()
 	$cache_key = 'vs_all_categories_calendar';
 	$output = get_transient($cache_key);
 
-	if (false !== $output) {
-		return $output;
-	}
+	// if (false !== $output) {
+	// 	return $output;
+	// }
 
 	// Start output buffering
 	ob_start();
@@ -74,35 +74,99 @@ function vs_render_all_categories_calendar()
 		return ob_get_clean();
 	}
 
-	// Render the page
+	// Render the page as one big table
 ?>
 	<div class="vs-all-categories-calendar">
 		<h1 class="page-title">Sowing Calendars</h1>
 		<p class="page-description">View sowing, planting, and harvesting times for all seed categories.</p>
 
-		<div class="categories-calendar-list">
-			<?php foreach ($categories_with_calendar as $category) :
-				$category_link = get_term_link($category);
-				$post_id = "term_" . $category->term_id;
-			?>
-				<div class="category-calendar-item">
-					<h2 class="category-calendar-title">
-						<a href="<?php echo esc_url($category_link); ?>">
-							<?php echo esc_html($category->name); ?>
-						</a>
-					</h2>
+		<div class="vs-calendar summary">
+			<table class="sowing-calendar sowing-calendar-all">
+				<thead>
+					<tr>
+						<th class="calendar-label">Category</th>
+						<th class="calendar-label">Month</th>
+						<th colspan="2" class="calendar-label--month" title="January">J</th>
+						<th colspan="2" class="calendar-label--month" title="February">F</th>
+						<th colspan="2" class="calendar-label--month" title="March">M</th>
+						<th colspan="2" class="calendar-label--month" title="April">A</th>
+						<th colspan="2" class="calendar-label--month" title="May">M</th>
+						<th colspan="2" class="calendar-label--month" title="June">J</th>
+						<th colspan="2" class="calendar-label--month" title="July">J</th>
+						<th colspan="2" class="calendar-label--month" title="August">A</th>
+						<th colspan="2" class="calendar-label--month" title="September">S</th>
+						<th colspan="2" class="calendar-label--month" title="October">O</th>
+						<th colspan="2" class="calendar-label--month" title="November">N</th>
+						<th colspan="2" class="calendar-label--month" title="December">D</th>
+					</tr>
+				</thead>
+				<tbody>
+					<?php
+					$first_category = true;
+					foreach ($categories_with_calendar as $category) :
+						$category_link = get_term_link($category);
+						$post_id = "term_" . $category->term_id;
 
-					<div class="category-calendar-content">
-						<?php vs_sowing_calendar($post_id); ?>
-					</div>
-				</div>
-			<?php endforeach; ?>
+						// Get calendar data for this category
+						$sow_months = get_field('vs_calendar_sow_month_parts', $post_id);
+						$plant_months = get_field('vs_calendar_plant_month_parts', $post_id);
+						$harvest_months = get_field('vs_calendar_harvest_month_parts', $post_id);
+
+						// Generate row cells
+						$sow_row = get_vs_calendar_row_cells('sow', $sow_months);
+						$plant_row = get_vs_calendar_row_cells('plant', $plant_months);
+						$harvest_row = get_vs_calendar_row_cells('harvest', $harvest_months);
+
+						// Count non-empty rows
+						$rows = array_filter([$sow_row, $plant_row, $harvest_row]);
+						$row_count = count($rows);
+
+						// Add separator row between categories (bold line)
+						if (!$first_category) {
+							echo '<tr class="category-separator"><td colspan="26"></td></tr>';
+						}
+						$first_category = false;
+
+						// Sow row
+						if (!empty($sow_row)) :
+					?>
+							<tr>
+								<?php if ($row_count > 0) : ?>
+									<td class="calendar-label category-name" rowspan="<?php echo $row_count; ?>">
+										<a href="<?php echo esc_url($category_link); ?>">
+											<?php echo esc_html($category->name); ?>
+										</a>
+									</td>
+								<?php endif; ?>
+								<td class="calendar-label">Sow</td>
+								<?php echo $sow_row; ?>
+							</tr>
+						<?php endif; ?>
+
+						<?php if (!empty($plant_row)) : ?>
+							<tr>
+								<td class="calendar-label">Plant</td>
+								<?php echo $plant_row; ?>
+							</tr>
+						<?php endif; ?>
+
+						<?php if (!empty($harvest_row)) : ?>
+							<tr>
+								<td class="calendar-label">Harvest</td>
+								<?php echo $harvest_row; ?>
+							</tr>
+					<?php
+						endif;
+					endforeach;
+					?>
+				</tbody>
+			</table>
 		</div>
 	</div>
 
 	<style>
 		.vs-all-categories-calendar {
-			max-width: 1200px;
+			max-width: 1400px;
 			margin: 0 auto;
 			padding: 2rem;
 		}
@@ -117,36 +181,36 @@ function vs_render_all_categories_calendar()
 			margin-bottom: 2rem;
 		}
 
-		.categories-calendar-list {
-			display: flex;
-			flex-direction: column;
-			gap: 3rem;
+		.sowing-calendar-all {
+			width: 100%;
 		}
 
-		.category-calendar-item {
-			border: 1px solid #e0e0e0;
-			border-radius: 8px;
-			padding: 1.5rem;
-			background: #fff;
+		.sowing-calendar-all .category-name {
+			font-weight: bold;
+			vertical-align: middle;
+			text-align: left;
+			padding: 0.5rem;
+			min-width: 150px;
 		}
 
-		.category-calendar-title {
-			margin: 0 0 1rem 0;
-			font-size: 1.5rem;
-		}
-
-		.category-calendar-title a {
+		.sowing-calendar-all .category-name a {
 			color: #333;
 			text-decoration: none;
 		}
 
-		.category-calendar-title a:hover {
+		.sowing-calendar-all .category-name a:hover {
 			color: #118800;
 			text-decoration: underline;
 		}
 
-		.category-calendar-content {
-			overflow-x: auto;
+		.sowing-calendar-all .category-separator {
+			height: 3px;
+		}
+
+		.sowing-calendar-all .category-separator td {
+			border-top: 3px solid #333;
+			padding: 0;
+			height: 3px;
 		}
 
 		@media (max-width: 768px) {
@@ -158,8 +222,8 @@ function vs_render_all_categories_calendar()
 				font-size: 1.5rem;
 			}
 
-			.categories-calendar-list {
-				gap: 2rem;
+			.vs-calendar.summary {
+				overflow-x: auto;
 			}
 		}
 	</style>

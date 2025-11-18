@@ -122,6 +122,7 @@ function get_vs_calendar_row_cells(
 	foreach (VITAL_MONTH_CHOICES as $key => $month_name) {
 		$month_class = strtolower($month_name);
 		$hl_class = '';
+		$title = '';
 		if (in_array($key, $selected_months)) {
 			$hl_class .= ' highlight highlight-' . $action;
 			$title = "title='$action in $month_name'";
