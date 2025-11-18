@@ -13,22 +13,6 @@ Text Domain:  vital-sowing-calendar
 Domain Path:  /languages
 */
 
-// function my_theme_enqueue_styles()
-// {
-
-// 	$parent_style = 'storefront-style';
-
-// 	wp_enqueue_style($parent_style, get_template_directory_uri() . '/style.css');
-// 	wp_enqueue_style(
-// 		'child-style',
-// 		get_stylesheet_directory_uri() . '/style.css',
-// 		array($parent_style),
-// 		wp_get_theme()->get('Version')
-// 	);
-// }
-// add_action('wp_enqueue_scripts', 'my_theme_enqueue_styles');
-
-
 function vital_calendar_enqueue_styles()
 {
 	wp_register_style('calendar-styles', plugin_dir_url(__FILE__) . 'css/calendar.css');
@@ -382,3 +366,70 @@ function category_by_month_shortcode($atts) {
 }
 
 add_shortcode('sow_by_month', 'category_by_month_shortcode');
+
+/**
+ * All Categories Calendar View
+ * Custom endpoint for displaying all seed category sowing calendars
+ */
+
+// Include the all-categories calendar rendering function
+require_once plugin_dir_path(__FILE__) . 'includes/all-categories-calendar.php';
+
+/**
+ * Add custom rewrite rule for /sowing-calendars/ endpoint
+ */
+function vs_add_sowing_calendars_rewrite_rule()
+{
+	add_rewrite_rule(
+		'^sowing-calendars/?$',
+		'index.php?vs_sowing_calendars=1',
+		'top'
+	);
+}
+add_action('init', 'vs_add_sowing_calendars_rewrite_rule');
+
+/**
+ * Register custom query var for sowing calendars endpoint
+ */
+function vs_add_sowing_calendars_query_var($vars)
+{
+	$vars[] = 'vs_sowing_calendars';
+	return $vars;
+}
+add_filter('query_vars', 'vs_add_sowing_calendars_query_var');
+
+/**
+ * Load custom template for sowing calendars endpoint
+ */
+function vs_sowing_calendars_template_redirect($template)
+{
+	if (get_query_var('vs_sowing_calendars')) {
+		$custom_template = plugin_dir_path(__FILE__) . 'templates/all-categories-calendar.php';
+
+		if (file_exists($custom_template)) {
+			return $custom_template;
+		}
+	}
+
+	return $template;
+}
+add_filter('template_include', 'vs_sowing_calendars_template_redirect');
+
+/**
+ * Flush rewrite rules on plugin activation
+ */
+function vs_activate_sowing_calendar()
+{
+	vs_add_sowing_calendars_rewrite_rule();
+	flush_rewrite_rules();
+}
+register_activation_hook(__FILE__, 'vs_activate_sowing_calendar');
+
+/**
+ * Flush rewrite rules on plugin deactivation
+ */
+function vs_deactivate_sowing_calendar()
+{
+	flush_rewrite_rules();
+}
+register_deactivation_hook(__FILE__, 'vs_deactivate_sowing_calendar');
