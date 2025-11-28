@@ -434,3 +434,15 @@ function vs_deactivate_sowing_calendar()
 	flush_rewrite_rules();
 }
 register_deactivation_hook(__FILE__, 'vs_deactivate_sowing_calendar');
+/**
+ * Set page title for sowing calendars page
+ */
+function vs_sowing_calendars_page_title($title)
+{
+	if (get_query_var('vs_sowing_calendars')) {
+		return 'Sowing Calendars';
+	}
+	return $title;
+}
+add_filter('pre_get_document_title', 'vs_sowing_calendars_page_title');
+add_filter('wp_title', 'vs_sowing_calendars_page_title');
