@@ -117,9 +117,9 @@ function vs_render_all_categories_calendar()
 	$cache_key = 'vs_all_categories_calendar_' . md5(serialize($_GET));
 	$output = get_transient($cache_key);
 
-	// if (false !== $output) {
-	// 	return $output;
-	// }
+	if (false !== $output) {
+		return $output;
+	}
 
 	// Start output buffering
 	ob_start();
