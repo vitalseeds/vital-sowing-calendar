@@ -266,6 +266,16 @@ function vs_render_all_categories_calendar()
 	// Render the page as one big table
 ?>
 	<div class="vs-all-categories-calendar">
+		<?php
+		// Get site logo for print
+		$custom_logo_id = get_theme_mod('custom_logo');
+		$logo_url = $custom_logo_id ? wp_get_attachment_image_src($custom_logo_id, 'full')[0] : '';
+		?>
+		<?php if ($logo_url) : ?>
+			<div class="print-logo">
+				<img src="<?php echo esc_url($logo_url); ?>" alt="<?php echo esc_attr(get_bloginfo('name')); ?>">
+			</div>
+		<?php endif; ?>
 		<h1 class="page-title">Sowing Calendars</h1>
 		<p class="page-description">View sowing, planting, and harvesting times for all seed categories.</p>
 
@@ -428,6 +438,10 @@ function vs_render_all_categories_calendar()
 		.vs-all-categories-calendar {
 			max-width: 1400px;
 			margin: 0 auto;
+		}
+
+		.print-logo {
+			display: none;
 		}
 
 		.page-title {
@@ -634,7 +648,22 @@ function vs_render_all_categories_calendar()
 
 		/* Print Styles */
 		@media print {
-			@page { size: auto;  margin: 0mm; }
+			@page { size: auto;  margin: 0 0; }
+
+			/* Show logo in top right */
+			.print-logo {
+				display: block !important;
+				position: fixed;
+				top: 0;
+				right: 0;
+				max-width: 150px;
+				padding: 5mm;
+			}
+
+			.print-logo img {
+				width: 100%;
+				height: auto;
+			}
 
 			/* Hide everything except the calendar table */
 			body > *:not(#page),
