@@ -631,6 +631,88 @@ function vs_render_all_categories_calendar()
 				top: 68px;
 			}
 		}
+
+		/* Print Styles */
+		@media print {
+			@page { size: auto;  margin: 0mm; }
+
+			/* Hide everything except the calendar table */
+			body > *:not(#page),
+			body #page > *:not(#content),
+			body .site-header,
+			body .site-footer,
+			body .mega-menu-wrap,
+			body .breadcrumbs,
+			body .page-title,
+			body .page-description,
+			body .vs-calendar-filters {
+				display: none !important;
+			}
+
+			/* Ensure the calendar table is visible */
+			body .vs-all-categories-calendar,
+			body .vs-calendar.summary {
+				display: block !important;
+				width: auto !important;
+				max-width: 100% !important;
+			}
+
+			body .sowing-calendar-all {
+				display: table !important;
+				width: auto !important;
+			}
+
+			/* Left align the table */
+			body .vs-all-categories-calendar {
+				margin: 0 !important;
+			}
+
+			body .sowing-calendar-all {
+				margin: 0 !important;
+			}
+
+			/* Remove sticky positioning for print */
+			.sowing-calendar-all thead,
+			.sowing-calendar-all thead th {
+				position: static !important;
+			}
+
+			/* Ensure table fits on page */
+			.sowing-calendar-all {
+				font-size: 9pt;
+				page-break-inside: avoid;
+			}
+
+			/* Reduce row height */
+			.sowing-calendar-all td,
+			.sowing-calendar-all th {
+				padding: 3px 5px !important;
+				line-height: 1.3 !important;
+			}
+
+			.sowing-calendar-all .category-header {
+				padding: 5px 8px !important;
+				font-size: 10pt !important;
+			}
+
+			/* Keep category groups together when possible */
+			.category-header-row,
+			.category-separator {
+				page-break-after: avoid;
+			}
+
+			/* Optimize for print colors */
+			.sowing-calendar-all .category-header {
+				background: #f5f5f5 !important;
+				-webkit-print-color-adjust: exact;
+				print-color-adjust: exact;
+			}
+
+			.sowing-calendar-all .highlight {
+				-webkit-print-color-adjust: exact;
+				print-color-adjust: exact;
+			}
+		}
 	</style>
 <?php
 
