@@ -331,7 +331,7 @@ function vs_render_all_categories_calendar()
 			<table class="sowing-calendar sowing-calendar-all">
 				<thead>
 					<tr>
-						<th class="calendar-label">Action</th>
+						<th class="calendar-label">Month</th>
 						<th colspan="2" class="calendar-label--month" title="January">J</th>
 						<th colspan="2" class="calendar-label--month" title="February">F</th>
 						<th colspan="2" class="calendar-label--month" title="March">M</th>
@@ -423,6 +423,8 @@ function vs_render_all_categories_calendar()
 	</div>
 
 	<style>
+		.site {overflow-x: visible;}
+		#mega-menu-wrap-primary.mega-sticky {opacity: 1;}
 		.vs-all-categories-calendar {
 			max-width: 1400px;
 			margin: 0 auto;
@@ -543,8 +545,29 @@ function vs_render_all_categories_calendar()
 			background: #444;
 		}
 
+		.vs-calendar.summary {
+			position: relative;
+		}
+
 		.sowing-calendar-all {
 			width: 100%;
+		}
+
+		.sowing-calendar-all thead {
+			position: sticky;
+			top: 0;
+			z-index: 10;
+
+		}
+
+		.sowing-calendar-all thead th {
+			position: sticky;
+			top: 85px;
+			z-index: 10;
+
+			/* background: #118800; */
+			/* box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.1); */
+			border:none;
 		}
 
 		table tbody tr:nth-child(2n) td {
@@ -604,9 +627,8 @@ function vs_render_all_categories_calendar()
 			.page-title {
 				font-size: 1.5rem;
 			}
-
-			.vs-calendar.summary {
-				overflow-x: auto;
+			.sowing-calendar-all thead th {
+				top: 68px;
 			}
 		}
 	</style>
