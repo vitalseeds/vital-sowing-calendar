@@ -117,9 +117,9 @@ function vs_render_all_categories_calendar()
 	$cache_key = 'vs_all_categories_calendar_' . md5(serialize($_GET));
 	$output = get_transient($cache_key);
 
-	if (false !== $output) {
-		return $output;
-	}
+	// if (false !== $output) {
+	// 	return $output;
+	// }
 
 	// Start output buffering
 	ob_start();
@@ -236,14 +236,49 @@ function vs_render_all_categories_calendar()
 	// Get top-level categories for dropdown
 	$top_level_categories = vs_get_top_level_seed_categories();
 
+	// Build active filters summary
+	$active_filters = array();
+	if (!empty($filter_category)) {
+		$cat = get_term_by('slug', $filter_category, 'product_cat');
+		if ($cat) {
+			$active_filters[] = $cat->name;
+		}
+	}
+	if (!empty($filter_action)) {
+		$action_labels = ['sow' => 'Sow', 'plant' => 'Plant', 'harvest' => 'Harvest'];
+		if (isset($action_labels[$filter_action])) {
+			$active_filters[] = $action_labels[$filter_action];
+		}
+	}
+	if (!empty($filter_month)) {
+		$month_labels = [
+			'current' => 'This Month',
+			'jan' => 'January', 'feb' => 'February', 'mar' => 'March',
+			'apr' => 'April', 'may' => 'May', 'jun' => 'June',
+			'jul' => 'July', 'aug' => 'August', 'sep' => 'September',
+			'oct' => 'October', 'nov' => 'November', 'dec' => 'December'
+		];
+		if (isset($month_labels[$filter_month])) {
+			$active_filters[] = $month_labels[$filter_month];
+		}
+	}
+
 	// Render the page as one big table
 ?>
 	<div class="vs-all-categories-calendar">
 		<h1 class="page-title">Sowing Calendars</h1>
 		<p class="page-description">View sowing, planting, and harvesting times for all seed categories.</p>
 
+		<!-- Active Filters Summary -->
+		<?php if (!empty($active_filters)) : ?>
+			<div class="active-filters-summary">
+				<strong>Filtered by:</strong> <?php echo esc_html(implode(' • ', $active_filters)); ?>
+				<!-- <a href="<?php echo esc_url(strtok($_SERVER['REQUEST_URI'], '?')); ?>" class="clear-filters">Clear all</a> -->
+			</div>
+		<?php endif; ?>
+
 		<!-- Filter Form -->
-		<details class="growingguide vs-calendar-filters" <?php echo (!empty($filter_category) || !empty($filter_action) || !empty($filter_month)) ? 'open' : ''; ?>><summary>Filters</summary><div>
+		<details class="growingguide vs-calendar-filters"><summary>Filters</summary><div>
 		<form method="get" action="" class="calendar-filters">
 			<div class="filter-row">
 				<div class="filter-field">
@@ -389,6 +424,36 @@ function vs_render_all_categories_calendar()
 		.page-description {
 			color: #666;
 			margin-bottom: 1rem;
+		}
+
+		/* Active Filters Summary */
+		.active-filters-summary {
+			background: #f0f7f0;
+			border-left: 4px solid #118800;
+			padding: 0.75rem 1rem;
+			margin-bottom: 1rem;
+			display: flex;
+			align-items: center;
+			gap: 1rem;
+			flex-wrap: wrap;
+		}
+
+		.active-filters-summary strong {
+			color: #118800;
+		}
+
+		.active-filters-summary .clear-filters {
+			margin-left: auto;
+			padding: 0.25rem 0.75rem;
+			background: #666;
+			color: white;
+			border-radius: 4px;
+			text-decoration: none;
+			font-size: 0.9rem;
+		}
+
+		.active-filters-summary .clear-filters:hover {
+			background: #444;
 		}
 
 		/* Filter Form Styles */
