@@ -243,7 +243,7 @@ function vs_render_all_categories_calendar()
 		<p class="page-description">View sowing, planting, and harvesting times for all seed categories.</p>
 
 		<!-- Filter Form -->
-		<details class="growingguide vs-calendar-filters"><summary>Filters</summary><div>
+		<details class="growingguide vs-calendar-filters" <?php echo (!empty($filter_category) || !empty($filter_action) || !empty($filter_month)) ? 'open' : ''; ?>><summary>Filters</summary><div>
 		<form method="get" action="" class="calendar-filters">
 			<div class="filter-row">
 				<div class="filter-field">
