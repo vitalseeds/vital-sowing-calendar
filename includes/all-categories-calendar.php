@@ -370,11 +370,12 @@ function vs_render_all_categories_calendar()
 
 						// Category name header row
 						$category_link = get_term_link($category);
+						$category_display_name = preg_replace('/ Seeds$/i', '', $category->name);
 					?>
 						<tr class="category-header-row">
 							<td colspan="25" class="category-header">
 								<a href="<?php echo esc_url($category_link); ?>">
-									<?php echo esc_html($category->name); ?>
+									<?php echo esc_html($category_display_name); ?>
 								</a>
 							</td>
 						</tr>
@@ -551,7 +552,7 @@ function vs_render_all_categories_calendar()
 
 		.sowing-calendar-all .category-header-row .category-header {
 			font-weight: bold;
-			font-size: 1.1rem;
+			font-size: 0.9rem;
 			padding: 0.75rem;
 			text-align: left;
 			background: #f5f5f5;
