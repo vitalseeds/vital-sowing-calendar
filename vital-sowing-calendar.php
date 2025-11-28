@@ -434,6 +434,19 @@ function vs_deactivate_sowing_calendar()
 	flush_rewrite_rules();
 }
 register_deactivation_hook(__FILE__, 'vs_deactivate_sowing_calendar');
+
+/**
+ * Add body class for sowing calendars page
+ */
+function vs_sowing_calendars_body_class($classes)
+{
+	if (get_query_var('vs_sowing_calendars')) {
+		$classes[] = 'sowing-calendars-page';
+	}
+	return $classes;
+}
+add_filter('body_class', 'vs_sowing_calendars_body_class');
+
 /**
  * Set page title for sowing calendars page
  */
@@ -444,5 +457,9 @@ function vs_sowing_calendars_page_title($title)
 	}
 	return $title;
 }
-add_filter('pre_get_document_title', 'vs_sowing_calendars_page_title');
-add_filter('wp_title', 'vs_sowing_calendars_page_title');
+add_filter('pre_get_document_title', 'vs_sowing_calendars_page_title', 999);
+add_filter('wp_title', 'vs_sowing_calendars_page_title', 999);
+
+// Override Yoast SEO title
+add_filter('wpseo_title', 'vs_sowing_calendars_page_title', 999);
+add_filter('wpseo_opengraph_title', 'vs_sowing_calendars_page_title', 999);
