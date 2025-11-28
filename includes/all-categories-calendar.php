@@ -269,16 +269,12 @@ function vs_render_all_categories_calendar()
 		<h1 class="page-title">Sowing Calendars</h1>
 		<p class="page-description">View sowing, planting, and harvesting times for all seed categories.</p>
 
-		<!-- Active Filters Summary -->
-		<?php if (!empty($active_filters)) : ?>
-			<div class="active-filters-summary">
-				<strong>Filtered by:</strong> <?php echo esc_html(implode(' • ', $active_filters)); ?>
-				<!-- <a href="<?php echo esc_url(strtok($_SERVER['REQUEST_URI'], '?')); ?>" class="clear-filters">Clear all</a> -->
-			</div>
-		<?php endif; ?>
-
 		<!-- Filter Form -->
-		<details class="growingguide vs-calendar-filters"><summary>Filters</summary><div>
+		<details class="growingguide vs-calendar-filters <?php echo !empty($active_filters) ? 'has-active-filters' : ''; ?>">
+			<summary>
+				<span class="filter-label">Filters</span><?php if (!empty($active_filters)) : ?><br><span class="active-filters-text"><?php echo esc_html(implode(' • ', $active_filters)); ?></span><?php endif; ?>
+			</summary>
+			<div>
 		<form method="get" action="" class="calendar-filters">
 			<div class="filter-row">
 				<div class="filter-field">
@@ -426,34 +422,49 @@ function vs_render_all_categories_calendar()
 			margin-bottom: 1rem;
 		}
 
-		/* Active Filters Summary */
-		.active-filters-summary {
-			background: #f0f7f0;
-			border-left: 4px solid #118800;
-			padding: 0.75rem 1rem;
+		/* Filter Form Styles */
+
+		.vs-calendar-filters {
 			margin-bottom: 1rem;
-			display: flex;
-			align-items: center;
-			gap: 1rem;
-			flex-wrap: wrap;
 		}
 
-		.active-filters-summary strong {
+		.vs-calendar-filters summary {
+			cursor: pointer;
+			padding: 0.75rem 1rem;
+			background: #f5f5f5;
+			border: 1px solid #ddd;
+			border-radius: 4px;
+		}
+
+		.vs-calendar-filters summary:hover {
+			background: #efefef;
+		}
+
+		.vs-calendar-filters.has-active-filters summary {
+			background: #f0f7f0;
+			border-left: 4px solid #118800;
+		}
+
+		.vs-calendar-filters summary .filter-label {
+			font-weight: 600;
+		}
+
+		.vs-calendar-filters.has-active-filters summary .filter-label {
 			color: #118800;
 		}
 
-		.active-filters-summary .clear-filters {
-			margin-left: auto;
-			padding: 0.25rem 0.75rem;
-			background: #666;
-			color: white;
-			border-radius: 4px;
-			text-decoration: none;
+		.vs-calendar-filters summary .active-filters-text {
+			color: #333;
 			font-size: 0.9rem;
+
 		}
 
-		.active-filters-summary .clear-filters:hover {
-			background: #444;
+		.vs-calendar-filters > div {
+			padding: 1rem;
+			background: #fafafa;
+			border: 1px solid #ddd;
+			border-top: none;
+			border-radius: 0 0 4px 4px;
 		}
 
 		/* Filter Form Styles */
