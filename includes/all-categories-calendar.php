@@ -331,8 +331,7 @@ function vs_render_all_categories_calendar()
 			<table class="sowing-calendar sowing-calendar-all">
 				<thead>
 					<tr>
-						<th class="calendar-label">Category</th>
-						<th class="calendar-label">Month</th>
+						<th class="calendar-label">Action</th>
 						<th colspan="2" class="calendar-label--month" title="January">J</th>
 						<th colspan="2" class="calendar-label--month" title="February">F</th>
 						<th colspan="2" class="calendar-label--month" title="March">M</th>
@@ -365,18 +364,26 @@ function vs_render_all_categories_calendar()
 
 						// Add separator row between categories (bold line)
 						if (!$first_category) {
-							echo '<tr class="category-separator"><td colspan="26"></td></tr>';
+							echo '<tr class="category-separator"><td colspan="25"></td></tr>';
 						}
 						$first_category = false;
 
-						// Track if this is the first row for this category
-						$first_row = true;
+						// Category name header row
+						$category_link = get_term_link($category);
+					?>
+						<tr class="category-header-row">
+							<td colspan="25" class="category-header">
+								<a href="<?php echo esc_url($category_link); ?>">
+									<?php echo esc_html($category->name); ?>
+								</a>
+							</td>
+						</tr>
+					<?php
 
 						// Sow row
 						if (!empty($sow_row)) :
 					?>
 							<tr>
-								<?php echo vs_render_category_name_cell($category, $first_row); $first_row = false; ?>
 								<td class="calendar-label">Sow</td>
 								<?php echo $sow_row; ?>
 							</tr>
@@ -384,7 +391,6 @@ function vs_render_all_categories_calendar()
 
 						<?php if (!empty($plant_row)) : ?>
 							<tr>
-								<?php echo vs_render_category_name_cell($category, $first_row); $first_row = false; ?>
 								<td class="calendar-label">Plant</td>
 								<?php echo $plant_row; ?>
 							</tr>
@@ -392,7 +398,6 @@ function vs_render_all_categories_calendar()
 
 						<?php if (!empty($harvest_row)) : ?>
 							<tr>
-								<?php echo vs_render_category_name_cell($category, $first_row); $first_row = false; ?>
 								<td class="calendar-label">Harvest</td>
 								<?php echo $harvest_row; ?>
 							</tr>
@@ -409,7 +414,6 @@ function vs_render_all_categories_calendar()
 		.vs-all-categories-calendar {
 			max-width: 1400px;
 			margin: 0 auto;
-			padding: 2rem;
 		}
 
 		.page-title {
@@ -531,27 +535,8 @@ function vs_render_all_categories_calendar()
 			width: 100%;
 		}
 
-		.sowing-calendar-all .category-name {
-			font-weight: bold;
-			vertical-align: middle;
-			text-align: left;
-			padding: 0.5rem;
-			min-width: 150px;
-		}
-		.sowing-calendar-all .category-name:not(:empty) {
-			border: none;
-		}
 		table tbody tr:nth-child(2n) td {
 			background-color:inherit;
-		}
-		.sowing-calendar-all .category-name a {
-			color: #333;
-			text-decoration: none;
-		}
-
-		.sowing-calendar-all .category-name a:hover {
-			color: #118800;
-			text-decoration: underline;
 		}
 
 		.sowing-calendar-all .category-separator {
@@ -564,26 +549,40 @@ function vs_render_all_categories_calendar()
 			height: 3px;
 		}
 
-		/* Fix border alignment - offset by 2 because of Category + Month columns */
-		.sowing-calendar-all tbody td:nth-child(even) {
-			border-right: solid 1px #DDEEEE;
-			border-left: none;
+		.sowing-calendar-all .category-header-row .category-header {
+			font-weight: bold;
+			font-size: 1.1rem;
+			padding: 0.75rem;
+			text-align: left;
+			background: #f5f5f5;
+			border: solid 1px #DDEEEE;
 		}
-		.sowing-calendar-all tbody td:nth-child(odd) {
+
+		.sowing-calendar-all .category-header a {
+			color: #333;
+			text-decoration: none;
+		}
+
+		.sowing-calendar-all .category-header a:hover {
+			color: #118800;
+			text-decoration: underline;
+		}
+
+		/* Fix border alignment - offset by 1 because of Action column */
+		.sowing-calendar-all tbody td:nth-child(even) {
 			border-left: solid 1px #DDEEEE;
 			border-right: none;
 		}
-		/* First two columns (Category, Month) should have normal borders */
-		.sowing-calendar-all tbody td:nth-child(1),
-		.sowing-calendar-all tbody td:nth-child(2) {
+		.sowing-calendar-all tbody td:nth-child(odd) {
+			border-right: solid 1px #DDEEEE;
+			border-left: none;
+		}
+		/* First column (Action) should have normal borders */
+		.sowing-calendar-all tbody td:nth-child(1) {
 			border: solid 1px #DDEEEE !important;
 		}
 
 		@media (max-width: 768px) {
-			.vs-all-categories-calendar {
-				padding: 1rem;
-			}
-
 			.page-title {
 				font-size: 1.5rem;
 			}
