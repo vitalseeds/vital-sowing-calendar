@@ -113,13 +113,28 @@ function vs_render_all_categories_calendar()
 	$filter_action = isset($_GET['filter_action']) ? sanitize_text_field($_GET['filter_action']) : '';
 	$filter_month = isset($_GET['filter_month']) ? sanitize_text_field($_GET['filter_month']) : '';
 
+	// Clear cache if requested via URL parameter
+	if (isset($_GET['clear_cache']) && $_GET['clear_cache'] === '1') {
+		global $wpdb;
+		$deleted = $wpdb->query(
+			"DELETE FROM {$wpdb->options}
+			WHERE option_name LIKE '_transient_vs_all_categories_calendar_%'
+			OR option_name LIKE '_transient_timeout_vs_all_categories_calendar_%'"
+		);
+		wp_redirect(remove_query_arg('clear_cache'));
+		exit;
+	}
+
 	// Check for cached version with filters
+	// Cache key includes all GET parameters so each filter combination is cached separately
 	$cache_key = 'vs_all_categories_calendar_' . md5(serialize($_GET));
 	$output = get_transient($cache_key);
 
 	if (false !== $output) {
 		return $output;
 	}
+
+	// Note: To clear the cache after deployment, visit: /sowing-calendars/?clear_cache=1
 
 	// Start output buffering
 	ob_start();
