@@ -114,8 +114,11 @@ function vs_render_all_categories_calendar()
 	$filter_month = isset($_GET['filter_month']) ? sanitize_text_field($_GET['filter_month']) : '';
 
 	// Clear cache if requested via URL parameter
+
+	$clear_cache = false;
 	if (isset($_GET['clear_cache']) && $_GET['clear_cache'] === '1') {
 		global $wpdb;
+		$clear_cache = true;
 		$deleted = $wpdb->query(
 			"DELETE FROM {$wpdb->options}
 			WHERE option_name LIKE '_transient_vs_all_categories_calendar_%'
@@ -130,9 +133,9 @@ function vs_render_all_categories_calendar()
 	$cache_key = 'vs_all_categories_calendar_' . md5(serialize($_GET));
 	$output = get_transient($cache_key);
 
-	// if (false !== $output) {
-	// 	return $output;
-	// }
+	if ( false !== $output && !$clear_cache) {
+		return $output;
+	}
 
 	// Note: To clear the cache after deployment, visit: /sowing-calendars/?clear_cache=1
 
