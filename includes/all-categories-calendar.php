@@ -370,6 +370,7 @@ function vs_render_all_categories_calendar()
 
 						// Category name header row
 						$category_link = get_term_link($category);
+						// Remove the 'Seeds' suffix to category names
 						$category_display_name = preg_replace('/ Seeds$/i', '', $category->name);
 					?>
 						<tr class="category-header-row">
@@ -381,24 +382,34 @@ function vs_render_all_categories_calendar()
 						</tr>
 					<?php
 
+						// Determine which is the last row
+						$has_sow = !empty($sow_row);
+						$has_plant = !empty($plant_row);
+						$has_harvest = !empty($harvest_row);
+
+						$last_row = '';
+						if ($has_harvest) $last_row = 'harvest';
+						elseif ($has_plant) $last_row = 'plant';
+						elseif ($has_sow) $last_row = 'sow';
+
 						// Sow row
-						if (!empty($sow_row)) :
+						if ($has_sow) :
 					?>
-							<tr>
+							<tr<?php echo ($last_row === 'sow') ? ' class="last-category-row"' : ''; ?>>
 								<td class="calendar-label">Sow</td>
 								<?php echo $sow_row; ?>
 							</tr>
 						<?php endif; ?>
 
-						<?php if (!empty($plant_row)) : ?>
-							<tr>
+						<?php if ($has_plant) : ?>
+							<tr<?php echo ($last_row === 'plant') ? ' class="last-category-row"' : ''; ?>>
 								<td class="calendar-label">Plant</td>
 								<?php echo $plant_row; ?>
 							</tr>
 						<?php endif; ?>
 
-						<?php if (!empty($harvest_row)) : ?>
-							<tr>
+						<?php if ($has_harvest) : ?>
+							<tr<?php echo ($last_row === 'harvest') ? ' class="last-category-row"' : ''; ?>>
 								<td class="calendar-label">Harvest</td>
 								<?php echo $harvest_row; ?>
 							</tr>
@@ -541,13 +552,14 @@ function vs_render_all_categories_calendar()
 		}
 
 		.sowing-calendar-all .category-separator {
-			height: 3px;
+			height: 0px;
+			border-width: 0;
 		}
 
 		.sowing-calendar-all .category-separator td {
-			border-top: 3px solid #333;
+			border-width: 0;
+			border-bottom: 2px solid #ccc;
 			padding: 0;
-			height: 3px;
 		}
 
 		.sowing-calendar-all .category-header-row .category-header {
@@ -578,9 +590,14 @@ function vs_render_all_categories_calendar()
 			border-right: solid 1px #DDEEEE;
 			border-left: none;
 		}
-		/* First column (Action) should have normal borders */
+		/* First column (Action) should have normal borders
 		.sowing-calendar-all tbody td:nth-child(1) {
 			border: solid 1px #DDEEEE !important;
+		} */
+
+		/* Remove bottom border from last row of each category */
+		.sowing-calendar-all tbody tr.last-category-row td {
+			border-bottom: none;
 		}
 
 		@media (max-width: 768px) {
