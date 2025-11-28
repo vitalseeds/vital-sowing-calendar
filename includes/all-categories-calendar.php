@@ -130,9 +130,9 @@ function vs_render_all_categories_calendar()
 	$cache_key = 'vs_all_categories_calendar_' . md5(serialize($_GET));
 	$output = get_transient($cache_key);
 
-	if (false !== $output) {
-		return $output;
-	}
+	// if (false !== $output) {
+	// 	return $output;
+	// }
 
 	// Note: To clear the cache after deployment, visit: /sowing-calendars/?clear_cache=1
 
@@ -293,6 +293,8 @@ function vs_render_all_categories_calendar()
 		<?php endif; ?>
 		<h1 class="page-title">Sowing Calendars</h1>
 		<p class="page-description">View sowing, planting, and harvesting times for all seed categories.</p>
+
+		<script>console.log('Active Filters:', <?php echo json_encode($active_filters); ?>);</script>
 
 		<!-- Filter Form -->
 		<details class="growingguide vs-calendar-filters <?php echo !empty($active_filters) ? 'has-active-filters' : ''; ?>">
