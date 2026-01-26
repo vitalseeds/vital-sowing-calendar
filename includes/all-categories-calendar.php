@@ -177,21 +177,29 @@ function vs_render_all_categories_calendar()
 		return ob_get_clean();
 	}
 
-	// Filter categories that have calendar data
+	// Check if show_all query var is set (shows all categories regardless of calendar data)
+	$show_all = isset($_GET['show_all']) && $_GET['show_all'] === '1';
+
+	// Filter categories that have calendar data (unless show_all is set)
 	$categories_with_calendar = array();
 
 	foreach ($categories as $category) {
-		$sow_months = get_field('vs_calendar_sow_month_parts', 'product_cat_' . $category->term_id);
-		$plant_months = get_field('vs_calendar_plant_month_parts', 'product_cat_' . $category->term_id);
-		$harvest_months = get_field('vs_calendar_harvest_month_parts', 'product_cat_' . $category->term_id);
-
-		// Check if any calendar data exists
-		$has_calendar = (is_array($sow_months) && !empty($sow_months)) ||
-			(is_array($plant_months) && !empty($plant_months)) ||
-			(is_array($harvest_months) && !empty($harvest_months));
-
-		if ($has_calendar) {
+		if ($show_all) {
+			// Include all categories when show_all is set
 			$categories_with_calendar[] = $category;
+		} else {
+			$sow_months = get_field('vs_calendar_sow_month_parts', 'product_cat_' . $category->term_id);
+			$plant_months = get_field('vs_calendar_plant_month_parts', 'product_cat_' . $category->term_id);
+			$harvest_months = get_field('vs_calendar_harvest_month_parts', 'product_cat_' . $category->term_id);
+
+			// Check if any calendar data exists
+			$has_calendar = (is_array($sow_months) && !empty($sow_months)) ||
+				(is_array($plant_months) && !empty($plant_months)) ||
+				(is_array($harvest_months) && !empty($harvest_months));
+
+			if ($has_calendar) {
+				$categories_with_calendar[] = $category;
+			}
 		}
 	}
 

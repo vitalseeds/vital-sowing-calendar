@@ -395,6 +395,7 @@ add_action('init', 'vs_add_sowing_calendars_rewrite_rule');
 function vs_add_sowing_calendars_query_var($vars)
 {
 	$vars[] = 'vs_sowing_calendars';
+	$vars[] = 'show_all';
 	return $vars;
 }
 add_filter('query_vars', 'vs_add_sowing_calendars_query_var');
