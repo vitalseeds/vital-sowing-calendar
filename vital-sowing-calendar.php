@@ -464,3 +464,6 @@ add_filter('wp_title', 'vs_sowing_calendars_page_title', 999);
 // Override Yoast SEO title
 add_filter('wpseo_title', 'vs_sowing_calendars_page_title', 999);
 add_filter('wpseo_opengraph_title', 'vs_sowing_calendars_page_title', 999);
+
+// Admin meta box for product edit screen
+require_once plugin_dir_path(__FILE__) . 'includes/admin-meta-box.php';
