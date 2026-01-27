@@ -2,8 +2,8 @@
 <div class="vs-calendar summary">
 	<table class="sowing-calendar">
 		<thead>
-			<tr class="">
-				<th class="calendar-label">Month</th>
+			<tr>
+				<th class="calendar-label"></th>
 				<th colspan="2" class="calendar-label--month" title="January">J</th>
 				<th colspan="2" class="calendar-label--month" title="February">F</th>
 				<th colspan="2" class="calendar-label--month" title="March">M</th>
@@ -19,38 +19,17 @@
 			</tr>
 		</thead>
 		<tbody>
-			<?php if (!empty($args['sowing_row'])) : ?>
+			<?php if (!empty($args['sow_row'])) : ?>
 				<tr>
 					<td class="calendar-label">Sow</td>
-					<?php echo $args['sowing_row']; ?>
+					<?php echo $args['sow_row']; ?>
 				</tr>
 			<?php endif; ?>
 
-			<?php if (!empty($args['sow_indoors_row'])) : ?>
+			<?php if (!empty($args['plant_row'])) : ?>
 				<tr>
-					<td class="calendar-label">Sow indoors</td>
-					<?php echo $args['sow_indoors_row']; ?>
-				</tr>
-			<?php endif; ?>
-
-			<?php if (!empty($args['sow_outdoors_row'])) : ?>
-				<tr>
-					<td class="calendar-label">Sow outdoors</td>
-					<?php echo $args['sow_outdoors_row']; ?>
-				</tr>
-			<?php endif; ?>
-
-			<?php if (!empty($args['plant_outdoors_row'])) : ?>
-				<tr>
-					<td class="calendar-label">Plant outdoors</td>
-					<?php echo $args['plant_outdoors_row']; ?>
-				</tr>
-			<?php endif; ?>
-
-			<?php if (!empty($args['plant_undercover_row'])) : ?>
-				<tr>
-					<td class="calendar-label">Plant undercover</td>
-					<?php echo $args['plant_undercover_row']; ?>
+					<td class="calendar-label">Plant</td>
+					<?php echo $args['plant_row']; ?>
 				</tr>
 			<?php endif; ?>
 
@@ -69,4 +48,24 @@
 			<?php endif; ?>
 		</tbody>
 	</table>
+
+	<details class="calendar-key">
+		<summary>Key</summary>
+		<div class="key-items">
+			<?php if (!empty($args['sow_row'])) : ?>
+				<span class="key-item key-sow-indoors">Sow indoors</span>
+				<span class="key-item key-sow-outdoors">Sow outdoors</span>
+			<?php endif; ?>
+			<?php if (!empty($args['plant_row'])) : ?>
+				<span class="key-item key-plant-outdoors">Plant outdoors</span>
+				<span class="key-item key-plant-undercover">Plant undercover</span>
+			<?php endif; ?>
+			<?php if (!empty($args['harvest_row'])) : ?>
+				<span class="key-item key-harvest">Harvest</span>
+			<?php endif; ?>
+			<?php if (!empty($args['bloom_row'])) : ?>
+				<span class="key-item key-bloom">Bloom</span>
+			<?php endif; ?>
+		</div>
+	</details>
 </div>

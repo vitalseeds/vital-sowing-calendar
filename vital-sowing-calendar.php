@@ -4,7 +4,7 @@
 Plugin Name:  Vital Sowing Calendar
 Plugin URI:   https://github.com/vitalseeds/vital-sowing-calendar
 Description:  Sowing, planting and harvesting calendar for Wordpress. Requires Advanced Custom Fields (ACF).
-Version:      2.1
+Version:      2.3
 Author:       tombola
 Author URI:   https://github.com/tombola
 License:      GPL2
@@ -135,6 +135,53 @@ function get_vs_calendar_row_cells(
 
 
 /**
+ * Returns a row of cells for a calendar table with multiple overlapping actions.
+ *
+ * Each cell can have multiple highlight classes when different actions overlap.
+ *
+ * @param array $fields Array of ['action' => string, 'months' => array|null]
+ * @return string The row of cells (td elements), or empty string if no data
+ */
+function get_vs_calendar_combined_row_cells($fields)
+{
+	// Check if any field has data
+	$has_any_data = false;
+	foreach ($fields as $field) {
+		if (!empty($field['months'])) {
+			$has_any_data = true;
+			break;
+		}
+	}
+	if (!$has_any_data) {
+		return '';
+	}
+
+	$row = [];
+	foreach (VITAL_MONTH_CHOICES as $key => $month_name) {
+		$month_class = strtolower($month_name);
+		$hl_classes = [];
+		$titles = [];
+
+		foreach ($fields as $field) {
+			if (!empty($field['months']) && in_array($key, $field['months'])) {
+				$hl_classes[] = 'highlight-' . $field['action'];
+				$titles[] = $field['action'];
+			}
+		}
+
+		$class_str = $month_class;
+		$title_str = '';
+		if (!empty($hl_classes)) {
+			$class_str .= ' highlight ' . implode(' ', $hl_classes);
+			$title_str = "title='" . implode(', ', $titles) . " in $month_name'";
+		}
+		$row[] = "<td class='$class_str' $title_str></td>";
+	}
+	return implode("\n", $row);
+}
+
+
+/**
  * Displays a sowing calendar for the product.
  */
 function vs_sowing_calendar($post_id = false)
@@ -175,13 +222,23 @@ function vs_sowing_calendar($post_id = false)
 		return;
 	}
 
+	// Combined row for all Sow fields
+	$sow_row = get_vs_calendar_combined_row_cells([
+		['action' => 'sow', 'months' => $vs_calendar_sow_month_parts],
+		['action' => 'sow-indoors', 'months' => $vs_calendar_sow_indoors_month_parts],
+		['action' => 'sow-outdoors', 'months' => $vs_calendar_sow_outdoors_month_parts],
+	]);
+
+	// Combined row for all Plant fields
+	$plant_row = get_vs_calendar_combined_row_cells([
+		['action' => 'plant', 'months' => $vs_calendar_plant_month_parts],
+		['action' => 'plant-outdoors', 'months' => $vs_calendar_plant_outdoors_month_parts],
+		['action' => 'plant-undercover', 'months' => $vs_calendar_plant_undercover_month_parts],
+	]);
+
 	$args = array(
-		'sowing_row' => @get_vs_calendar_row_cells('sow', $vs_calendar_sow_month_parts),
-		'sow_indoors_row' => @get_vs_calendar_row_cells('sow-indoors', $vs_calendar_sow_indoors_month_parts),
-		'sow_outdoors_row' => @get_vs_calendar_row_cells('sow-outdoors', $vs_calendar_sow_outdoors_month_parts),
-		'plant_row' => @get_vs_calendar_row_cells('plant', $vs_calendar_plant_month_parts),
-		'plant_outdoors_row' => @get_vs_calendar_row_cells('plant', $vs_calendar_plant_outdoors_month_parts),
-		'plant_undercover_row' => @get_vs_calendar_row_cells('plant-undercover', $vs_calendar_plant_undercover_month_parts),
+		'sow_row' => $sow_row,
+		'plant_row' => $plant_row,
 		'harvest_row' => @get_vs_calendar_row_cells('harvest', $vs_calendar_harvest_month_parts),
 		'bloom_row' => @get_vs_calendar_row_cells('bloom', $vs_calendar_bloom_month_parts),
 	);
