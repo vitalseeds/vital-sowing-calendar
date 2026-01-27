@@ -2,23 +2,36 @@
     --highlight-sow:  rgb(253, 238, 28);
     --highlight-plant: rgb(118, 200, 51);
     --highlight-harvest: rgb(216, 107, 1);
+    --highlight-bloom: rgb(218, 112, 214);
     --highlight-color: var(--highlight-plant);
 }
 
-tr[data-name="vs_calendar_sow_month_parts"], div[data-name="vs_calendar_sow_month_parts"] {
+tr[data-name="vs_calendar_sow_month_parts"], div[data-name="vs_calendar_sow_month_parts"],
+tr[data-name="vs_calendar_sow_indoors_month_parts"], div[data-name="vs_calendar_sow_indoors_month_parts"],
+tr[data-name="vs_calendar_sow_outdoors_month_parts"], div[data-name="vs_calendar_sow_outdoors_month_parts"] {
     --highlight-color: var(--highlight-sow);
 }
-tr[data-name="vs_calendar_plant_month_parts"], div[data-name="vs_calendar_plant_month_parts"] {
+tr[data-name="vs_calendar_plant_month_parts"], div[data-name="vs_calendar_plant_month_parts"],
+tr[data-name="vs_calendar_plant_outdoors_month_parts"], div[data-name="vs_calendar_plant_outdoors_month_parts"],
+tr[data-name="vs_calendar_plant_undercover_month_parts"], div[data-name="vs_calendar_plant_undercover_month_parts"] {
     --highlight-color: var(--highlight-plant);
 }
 tr[data-name="vs_calendar_harvest_month_parts"], div[data-name="vs_calendar_harvest_month_parts"] {
     --highlight-color: var(--highlight-harvest);
 }
+tr[data-name="vs_calendar_bloom_month_parts"], div[data-name="vs_calendar_bloom_month_parts"] {
+    --highlight-color: var(--highlight-bloom);
+}
 
 #acf-group_664343b4f3856,
 tr[data-name="vs_calendar_sow_month_parts"],
+tr[data-name="vs_calendar_sow_indoors_month_parts"],
+tr[data-name="vs_calendar_sow_outdoors_month_parts"],
 tr[data-name="vs_calendar_plant_month_parts"],
-tr[data-name="vs_calendar_harvest_month_parts"] {
+tr[data-name="vs_calendar_plant_outdoors_month_parts"],
+tr[data-name="vs_calendar_plant_undercover_month_parts"],
+tr[data-name="vs_calendar_harvest_month_parts"],
+tr[data-name="vs_calendar_bloom_month_parts"] {
     /* hide the checkbox */
     input[type=checkbox]{
         display: none !important;
