@@ -4,7 +4,7 @@
 Plugin Name:  Vital Sowing Calendar
 Plugin URI:   https://github.com/vitalseeds/vital-sowing-calendar
 Description:  Sowing, planting and harvesting calendar for Wordpress. Requires Advanced Custom Fields (ACF).
-Version:      2.0
+Version:      2.1
 Author:       tombola
 Author URI:   https://github.com/tombola
 License:      GPL2
@@ -15,7 +15,8 @@ Domain Path:  /languages
 
 function vital_calendar_enqueue_styles()
 {
-	wp_register_style('calendar-styles', plugin_dir_url(__FILE__) . 'css/calendar.css');
+	$version = get_file_data(__FILE__, array('Version'), 'plugin')[0];
+	wp_register_style('calendar-styles', plugin_dir_url(__FILE__) . 'css/calendar.css', array(), $version);
 	wp_enqueue_style('calendar-styles');
 }
 add_action('wp_enqueue_scripts', 'vital_calendar_enqueue_styles');
