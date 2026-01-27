@@ -1,20 +1,29 @@
 :root {
-    --highlight-sow:  rgb(253, 238, 28);
-    --highlight-plant: rgb(118, 200, 51);
-    --highlight-harvest: rgb(216, 107, 1);
-    --highlight-bloom: rgb(218, 112, 214);
+    --highlight-sow: rgb(253, 238, 28);
+    --highlight-sow-indoors: rgb(0, 188, 212);
+    --highlight-sow-outdoors: rgb(255, 245, 120);
+    --highlight-plant: rgb(80, 180, 100);
+    --highlight-plant-undercover: rgb(150, 215, 130);
+    --highlight-harvest: rgb(240, 140, 50);
+    --highlight-bloom: rgb(200, 160, 220);
     --highlight-color: var(--highlight-plant);
 }
 
-tr[data-name="vs_calendar_sow_month_parts"], div[data-name="vs_calendar_sow_month_parts"],
-tr[data-name="vs_calendar_sow_indoors_month_parts"], div[data-name="vs_calendar_sow_indoors_month_parts"],
-tr[data-name="vs_calendar_sow_outdoors_month_parts"], div[data-name="vs_calendar_sow_outdoors_month_parts"] {
+tr[data-name="vs_calendar_sow_month_parts"], div[data-name="vs_calendar_sow_month_parts"] {
     --highlight-color: var(--highlight-sow);
 }
+tr[data-name="vs_calendar_sow_indoors_month_parts"], div[data-name="vs_calendar_sow_indoors_month_parts"] {
+    --highlight-color: var(--highlight-sow-indoors);
+}
+tr[data-name="vs_calendar_sow_outdoors_month_parts"], div[data-name="vs_calendar_sow_outdoors_month_parts"] {
+    --highlight-color: var(--highlight-sow-outdoors);
+}
 tr[data-name="vs_calendar_plant_month_parts"], div[data-name="vs_calendar_plant_month_parts"],
-tr[data-name="vs_calendar_plant_outdoors_month_parts"], div[data-name="vs_calendar_plant_outdoors_month_parts"],
-tr[data-name="vs_calendar_plant_undercover_month_parts"], div[data-name="vs_calendar_plant_undercover_month_parts"] {
+tr[data-name="vs_calendar_plant_outdoors_month_parts"], div[data-name="vs_calendar_plant_outdoors_month_parts"] {
     --highlight-color: var(--highlight-plant);
+}
+tr[data-name="vs_calendar_plant_undercover_month_parts"], div[data-name="vs_calendar_plant_undercover_month_parts"] {
+    --highlight-color: var(--highlight-plant-undercover);
 }
 tr[data-name="vs_calendar_harvest_month_parts"], div[data-name="vs_calendar_harvest_month_parts"] {
     --highlight-color: var(--highlight-harvest);

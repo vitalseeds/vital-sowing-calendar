@@ -150,35 +150,39 @@ function vs_sowing_calendar($post_id = false)
 	// $enabled = get_field('enable_sowing_calendar', $post_id);
 	// if (!$enabled && !is_null($enabled)) return;
 
-	// If no months are set, don't display the calendar
-	// $vs_calendar_sow_month_parts = get_field('vs_calendar_sow_month_parts', $post_id);
-	// $vs_calendar_plant_month_parts = get_field('vs_calendar_plant_month_parts', $post_id);
-	// $vs_calendar_harvest_month_parts = get_field('vs_calendar_harvest_month_parts', $post_id);
+	// Retrieve all calendar field values
 	$vs_calendar_sow_month_parts = get_value_from_field_or_category('vs_calendar_sow_month_parts', $post_id);
+	$vs_calendar_sow_indoors_month_parts = get_value_from_field_or_category('vs_calendar_sow_indoors_month_parts', $post_id);
+	$vs_calendar_sow_outdoors_month_parts = get_value_from_field_or_category('vs_calendar_sow_outdoors_month_parts', $post_id);
 	$vs_calendar_plant_month_parts = get_value_from_field_or_category('vs_calendar_plant_month_parts', $post_id);
+	$vs_calendar_plant_outdoors_month_parts = get_value_from_field_or_category('vs_calendar_plant_outdoors_month_parts', $post_id);
+	$vs_calendar_plant_undercover_month_parts = get_value_from_field_or_category('vs_calendar_plant_undercover_month_parts', $post_id);
 	$vs_calendar_harvest_month_parts = get_value_from_field_or_category('vs_calendar_harvest_month_parts', $post_id);
+	$vs_calendar_bloom_month_parts = get_value_from_field_or_category('vs_calendar_bloom_month_parts', $post_id);
 
+	// If no months are set in any field, don't display the calendar
 	if (
 		!$vs_calendar_sow_month_parts &&
+		!$vs_calendar_sow_indoors_month_parts &&
+		!$vs_calendar_sow_outdoors_month_parts &&
 		!$vs_calendar_plant_month_parts &&
-		!$vs_calendar_harvest_month_parts
+		!$vs_calendar_plant_outdoors_month_parts &&
+		!$vs_calendar_plant_undercover_month_parts &&
+		!$vs_calendar_harvest_month_parts &&
+		!$vs_calendar_bloom_month_parts
 	) {
 		return;
 	}
 
 	$args = array(
-		'sowing_row' => @get_vs_calendar_row_cells(
-			'sow',
-			$vs_calendar_sow_month_parts,
-		),
-		'plant_row' => @get_vs_calendar_row_cells(
-			'plant',
-			$vs_calendar_plant_month_parts,
-		),
-		'harvest_row' => @get_vs_calendar_row_cells(
-			'harvest',
-			$vs_calendar_harvest_month_parts,
-		),
+		'sowing_row' => @get_vs_calendar_row_cells('sow', $vs_calendar_sow_month_parts),
+		'sow_indoors_row' => @get_vs_calendar_row_cells('sow-indoors', $vs_calendar_sow_indoors_month_parts),
+		'sow_outdoors_row' => @get_vs_calendar_row_cells('sow-outdoors', $vs_calendar_sow_outdoors_month_parts),
+		'plant_row' => @get_vs_calendar_row_cells('plant', $vs_calendar_plant_month_parts),
+		'plant_outdoors_row' => @get_vs_calendar_row_cells('plant', $vs_calendar_plant_outdoors_month_parts),
+		'plant_undercover_row' => @get_vs_calendar_row_cells('plant-undercover', $vs_calendar_plant_undercover_month_parts),
+		'harvest_row' => @get_vs_calendar_row_cells('harvest', $vs_calendar_harvest_month_parts),
+		'bloom_row' => @get_vs_calendar_row_cells('bloom', $vs_calendar_bloom_month_parts),
 	);
 	// TODO: use a template loader to make this themeable
 	// get_template_part('sowing-calendar', null, $args);

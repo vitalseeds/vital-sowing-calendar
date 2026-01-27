@@ -19,40 +19,54 @@
 			</tr>
 		</thead>
 		<tbody>
-			<?php
-			if (!empty($args['sowing_row'])) {
-			?>
-				<tr class="">
+			<?php if (!empty($args['sowing_row'])) : ?>
+				<tr>
 					<td class="calendar-label">Sow</td>
-					<?php
-					echo $args['sowing_row'];
-					?>
+					<?php echo $args['sowing_row']; ?>
 				</tr>
-			<?php
-			}
+			<?php endif; ?>
 
-			if (!empty($args['plant_row'])) {
-			?>
-				<tr class="">
-					<td class="calendar-label">Plant</td>
-					<?php
-					echo $args['plant_row'];
-					?>
+			<?php if (!empty($args['sow_indoors_row'])) : ?>
+				<tr>
+					<td class="calendar-label">Sow indoors</td>
+					<?php echo $args['sow_indoors_row']; ?>
 				</tr>
-			<?php
-			}
+			<?php endif; ?>
 
-			if (!empty($args['harvest_row'])) {
-			?>
-				<tr class="">
+			<?php if (!empty($args['sow_outdoors_row'])) : ?>
+				<tr>
+					<td class="calendar-label">Sow outdoors</td>
+					<?php echo $args['sow_outdoors_row']; ?>
+				</tr>
+			<?php endif; ?>
+
+			<?php if (!empty($args['plant_outdoors_row'])) : ?>
+				<tr>
+					<td class="calendar-label">Plant outdoors</td>
+					<?php echo $args['plant_outdoors_row']; ?>
+				</tr>
+			<?php endif; ?>
+
+			<?php if (!empty($args['plant_undercover_row'])) : ?>
+				<tr>
+					<td class="calendar-label">Plant undercover</td>
+					<?php echo $args['plant_undercover_row']; ?>
+				</tr>
+			<?php endif; ?>
+
+			<?php if (!empty($args['harvest_row'])) : ?>
+				<tr>
 					<td class="calendar-label">Harvest</td>
-					<?php
-					echo $args['harvest_row'];
-					?>
+					<?php echo $args['harvest_row']; ?>
 				</tr>
-			<?php
-			}
-			?>
+			<?php endif; ?>
+
+			<?php if (!empty($args['bloom_row'])) : ?>
+				<tr>
+					<td class="calendar-label">Bloom</td>
+					<?php echo $args['bloom_row']; ?>
+				</tr>
+			<?php endif; ?>
 		</tbody>
 	</table>
 </div>

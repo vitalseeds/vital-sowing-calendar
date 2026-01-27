@@ -2,9 +2,13 @@
 /* * { outline: 1px solid red; } */
 
 :root {
-    --highlight-sow:  rgb(253, 238, 28);
-    --highlight-plant: rgb(118, 200, 51);
-    --highlight-harvest: rgb(216, 107, 1);
+    --highlight-sow: rgb(253, 238, 28);
+    --highlight-sow-indoors: rgb(0, 188, 212);
+    --highlight-sow-outdoors: rgb(255, 245, 120);
+    --highlight-plant: rgb(80, 180, 100);
+    --highlight-plant-undercover: rgb(150, 215, 130);
+    --highlight-harvest: rgb(240, 140, 50);
+    --highlight-bloom: rgb(200, 160, 220);
 }
 
 .vs-calendar.summary {
@@ -51,11 +55,23 @@
 .vs-calendar table.sowing-calendar tr td.highlight-sow {
 	background: var(--highlight-sow);
 }
+.vs-calendar table.sowing-calendar tr td.highlight-sow-indoors {
+	background: var(--highlight-sow-indoors);
+}
+.vs-calendar table.sowing-calendar tr td.highlight-sow-outdoors {
+	background: var(--highlight-sow-outdoors);
+}
 .vs-calendar table.sowing-calendar tr td.highlight-plant {
 	background: var(--highlight-plant);
 }
+.vs-calendar table.sowing-calendar tr td.highlight-plant-undercover {
+	background: var(--highlight-plant-undercover);
+}
 .vs-calendar table.sowing-calendar tr td.highlight-harvest {
 	background: var(--highlight-harvest);
+}
+.vs-calendar table.sowing-calendar tr td.highlight-bloom {
+	background: var(--highlight-bloom);
 }
 @media (max-width:568px) {
 	.sowing-calendar thead th:not(.calendar-label), .sowing-calendar tbody td:not(.calendar-label) {
