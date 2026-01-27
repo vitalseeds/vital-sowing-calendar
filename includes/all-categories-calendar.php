@@ -55,8 +55,13 @@ function vs_filter_categories_by_action_month($categories, $action, $month_parts
 	// Determine which ACF field to check based on action
 	$field_map = [
 		'sow' => 'vs_calendar_sow_month_parts',
+		'sow-indoors' => 'vs_calendar_sow_indoors_month_parts',
+		'sow-outdoors' => 'vs_calendar_sow_outdoors_month_parts',
 		'plant' => 'vs_calendar_plant_month_parts',
+		'plant-outdoors' => 'vs_calendar_plant_outdoors_month_parts',
+		'plant-undercover' => 'vs_calendar_plant_undercover_month_parts',
 		'harvest' => 'vs_calendar_harvest_month_parts',
+		'bloom' => 'vs_calendar_bloom_month_parts',
 	];
 
 	if (!isset($field_map[$action])) {
@@ -188,14 +193,25 @@ function vs_render_all_categories_calendar()
 			// Include all categories when show_all is set
 			$categories_with_calendar[] = $category;
 		} else {
-			$sow_months = get_field('vs_calendar_sow_month_parts', 'product_cat_' . $category->term_id);
-			$plant_months = get_field('vs_calendar_plant_month_parts', 'product_cat_' . $category->term_id);
-			$harvest_months = get_field('vs_calendar_harvest_month_parts', 'product_cat_' . $category->term_id);
+			$term_id = 'product_cat_' . $category->term_id;
+			$sow_months = get_field('vs_calendar_sow_month_parts', $term_id);
+			$sow_indoors_months = get_field('vs_calendar_sow_indoors_month_parts', $term_id);
+			$sow_outdoors_months = get_field('vs_calendar_sow_outdoors_month_parts', $term_id);
+			$plant_months = get_field('vs_calendar_plant_month_parts', $term_id);
+			$plant_outdoors_months = get_field('vs_calendar_plant_outdoors_month_parts', $term_id);
+			$plant_undercover_months = get_field('vs_calendar_plant_undercover_month_parts', $term_id);
+			$harvest_months = get_field('vs_calendar_harvest_month_parts', $term_id);
+			$bloom_months = get_field('vs_calendar_bloom_month_parts', $term_id);
 
 			// Check if any calendar data exists
 			$has_calendar = (is_array($sow_months) && !empty($sow_months)) ||
+				(is_array($sow_indoors_months) && !empty($sow_indoors_months)) ||
+				(is_array($sow_outdoors_months) && !empty($sow_outdoors_months)) ||
 				(is_array($plant_months) && !empty($plant_months)) ||
-				(is_array($harvest_months) && !empty($harvest_months));
+				(is_array($plant_outdoors_months) && !empty($plant_outdoors_months)) ||
+				(is_array($plant_undercover_months) && !empty($plant_undercover_months)) ||
+				(is_array($harvest_months) && !empty($harvest_months)) ||
+				(is_array($bloom_months) && !empty($bloom_months));
 
 			if ($has_calendar) {
 				$categories_with_calendar[] = $category;
@@ -224,8 +240,13 @@ function vs_render_all_categories_calendar()
 		// If only action is set, show all categories that have that action defined
 		$field_map = [
 			'sow' => 'vs_calendar_sow_month_parts',
+			'sow-indoors' => 'vs_calendar_sow_indoors_month_parts',
+			'sow-outdoors' => 'vs_calendar_sow_outdoors_month_parts',
 			'plant' => 'vs_calendar_plant_month_parts',
+			'plant-outdoors' => 'vs_calendar_plant_outdoors_month_parts',
+			'plant-undercover' => 'vs_calendar_plant_undercover_month_parts',
 			'harvest' => 'vs_calendar_harvest_month_parts',
+			'bloom' => 'vs_calendar_bloom_month_parts',
 		];
 
 		if (isset($field_map[$filter_action])) {
@@ -244,13 +265,24 @@ function vs_render_all_categories_calendar()
 		}
 
 		$categories_with_calendar = array_filter($categories_with_calendar, function ($category) use ($month_parts) {
-			$sow = get_field('vs_calendar_sow_month_parts', 'product_cat_' . $category->term_id);
-			$plant = get_field('vs_calendar_plant_month_parts', 'product_cat_' . $category->term_id);
-			$harvest = get_field('vs_calendar_harvest_month_parts', 'product_cat_' . $category->term_id);
-
-			return (is_array($sow) && array_intersect($month_parts, $sow)) ||
-				(is_array($plant) && array_intersect($month_parts, $plant)) ||
-				(is_array($harvest) && array_intersect($month_parts, $harvest));
+			$term_id = 'product_cat_' . $category->term_id;
+			$fields = [
+				'vs_calendar_sow_month_parts',
+				'vs_calendar_sow_indoors_month_parts',
+				'vs_calendar_sow_outdoors_month_parts',
+				'vs_calendar_plant_month_parts',
+				'vs_calendar_plant_outdoors_month_parts',
+				'vs_calendar_plant_undercover_month_parts',
+				'vs_calendar_harvest_month_parts',
+				'vs_calendar_bloom_month_parts',
+			];
+			foreach ($fields as $field) {
+				$months = get_field($field, $term_id);
+				if (is_array($months) && array_intersect($month_parts, $months)) {
+					return true;
+				}
+			}
+			return false;
 		});
 	}
 
@@ -271,7 +303,16 @@ function vs_render_all_categories_calendar()
 		}
 	}
 	if (!empty($filter_action)) {
-		$action_labels = ['sow' => 'Sow', 'plant' => 'Plant', 'harvest' => 'Harvest'];
+		$action_labels = [
+			'sow' => 'Sow',
+			'sow-indoors' => 'Sow indoors',
+			'sow-outdoors' => 'Sow outdoors',
+			'plant' => 'Plant',
+			'plant-outdoors' => 'Plant outdoors',
+			'plant-undercover' => 'Plant undercover',
+			'harvest' => 'Harvest',
+			'bloom' => 'Bloom',
+		];
 		if (isset($action_labels[$filter_action])) {
 			$active_filters[] = $action_labels[$filter_action];
 		}
@@ -332,8 +373,12 @@ function vs_render_all_categories_calendar()
 					<select name="filter_action" id="filter_action">
 						<option value="">All Actions</option>
 						<option value="sow" <?php selected($filter_action, 'sow'); ?>>Sow</option>
-						<option value="plant" <?php selected($filter_action, 'plant'); ?>>Plant</option>
+						<option value="sow-indoors" <?php selected($filter_action, 'sow-indoors'); ?>>Sow indoors</option>
+						<option value="sow-outdoors" <?php selected($filter_action, 'sow-outdoors'); ?>>Sow outdoors</option>
+						<option value="plant-outdoors" <?php selected($filter_action, 'plant-outdoors'); ?>>Plant outdoors</option>
+						<option value="plant-undercover" <?php selected($filter_action, 'plant-undercover'); ?>>Plant undercover</option>
 						<option value="harvest" <?php selected($filter_action, 'harvest'); ?>>Harvest</option>
+						<option value="bloom" <?php selected($filter_action, 'bloom'); ?>>Bloom</option>
 					</select>
 				</div>
 
@@ -392,13 +437,21 @@ function vs_render_all_categories_calendar()
 
 						// Get calendar data for this category
 						$sow_months = get_field('vs_calendar_sow_month_parts', $post_id);
-						$plant_months = get_field('vs_calendar_plant_month_parts', $post_id);
+						$sow_indoors_months = get_field('vs_calendar_sow_indoors_month_parts', $post_id);
+						$sow_outdoors_months = get_field('vs_calendar_sow_outdoors_month_parts', $post_id);
+						$plant_outdoors_months = get_field('vs_calendar_plant_outdoors_month_parts', $post_id);
+						$plant_undercover_months = get_field('vs_calendar_plant_undercover_month_parts', $post_id);
 						$harvest_months = get_field('vs_calendar_harvest_month_parts', $post_id);
+						$bloom_months = get_field('vs_calendar_bloom_month_parts', $post_id);
 
 						// Generate row cells
 						$sow_row = get_vs_calendar_row_cells('sow', $sow_months);
-						$plant_row = get_vs_calendar_row_cells('plant', $plant_months);
+						$sow_indoors_row = get_vs_calendar_row_cells('sow-indoors', $sow_indoors_months);
+						$sow_outdoors_row = get_vs_calendar_row_cells('sow-outdoors', $sow_outdoors_months);
+						$plant_outdoors_row = get_vs_calendar_row_cells('plant', $plant_outdoors_months);
+						$plant_undercover_row = get_vs_calendar_row_cells('plant-undercover', $plant_undercover_months);
 						$harvest_row = get_vs_calendar_row_cells('harvest', $harvest_months);
+						$bloom_row = get_vs_calendar_row_cells('bloom', $bloom_months);
 
 						// Add separator row between categories (bold line)
 						if (!$first_category) {
@@ -420,39 +473,35 @@ function vs_render_all_categories_calendar()
 						</tr>
 					<?php
 
-						// Determine which is the last row
-						$has_sow = !empty($sow_row);
-						$has_plant = !empty($plant_row);
-						$has_harvest = !empty($harvest_row);
+						// Build array of rows to display (in order)
+						$rows = [
+							'sow' => ['label' => 'Sow', 'cells' => $sow_row],
+							'sow-indoors' => ['label' => 'Sow indoors', 'cells' => $sow_indoors_row],
+							'sow-outdoors' => ['label' => 'Sow outdoors', 'cells' => $sow_outdoors_row],
+							'plant-outdoors' => ['label' => 'Plant outdoors', 'cells' => $plant_outdoors_row],
+							'plant-undercover' => ['label' => 'Plant undercover', 'cells' => $plant_undercover_row],
+							'harvest' => ['label' => 'Harvest', 'cells' => $harvest_row],
+							'bloom' => ['label' => 'Bloom', 'cells' => $bloom_row],
+						];
 
-						$last_row = '';
-						if ($has_harvest) $last_row = 'harvest';
-						elseif ($has_plant) $last_row = 'plant';
-						elseif ($has_sow) $last_row = 'sow';
+						// Filter to only rows with data
+						$rows_with_data = array_filter($rows, function($row) {
+							return !empty($row['cells']);
+						});
 
-						// Sow row
-						if ($has_sow) :
+						// Get last row key for styling
+						$last_row_key = array_key_last($rows_with_data);
+
+						// Render each row
+						foreach ($rows_with_data as $key => $row) :
+							$is_last = ($key === $last_row_key);
 					?>
-							<tr<?php echo ($last_row === 'sow') ? ' class="last-category-row"' : ''; ?>>
-								<td class="calendar-label">Sow</td>
-								<?php echo $sow_row; ?>
-							</tr>
-						<?php endif; ?>
-
-						<?php if ($has_plant) : ?>
-							<tr<?php echo ($last_row === 'plant') ? ' class="last-category-row"' : ''; ?>>
-								<td class="calendar-label">Plant</td>
-								<?php echo $plant_row; ?>
-							</tr>
-						<?php endif; ?>
-
-						<?php if ($has_harvest) : ?>
-							<tr<?php echo ($last_row === 'harvest') ? ' class="last-category-row"' : ''; ?>>
-								<td class="calendar-label">Harvest</td>
-								<?php echo $harvest_row; ?>
+							<tr<?php echo $is_last ? ' class="last-category-row"' : ''; ?>>
+								<td class="calendar-label"><?php echo esc_html($row['label']); ?></td>
+								<?php echo $row['cells']; ?>
 							</tr>
 					<?php
-						endif;
+						endforeach;
 					endforeach;
 					?>
 				</tbody>
