@@ -11,14 +11,50 @@ if (!defined('ABSPATH')) {
 }
 
 /**
- * Get current month parts (e.g., ['mar1', 'mar2'])
- *
- * @return array Array of month part strings for current month
+ * All calendar field names mapped to their ACF field keys
  */
-function vs_get_current_month_parts()
+define('VS_CALENDAR_FIELD_MAP', [
+	'sow' => 'vs_calendar_sow_month_parts',
+	'sow-indoors' => 'vs_calendar_sow_indoors_month_parts',
+	'sow-outdoors' => 'vs_calendar_sow_outdoors_month_parts',
+	'plant' => 'vs_calendar_plant_month_parts',
+	'plant-outdoors' => 'vs_calendar_plant_outdoors_month_parts',
+	'plant-undercover' => 'vs_calendar_plant_undercover_month_parts',
+	'harvest' => 'vs_calendar_harvest_month_parts',
+	'bloom' => 'vs_calendar_bloom_month_parts',
+]);
+
+/**
+ * Convert month slug to month parts array
+ *
+ * @param string $month Month slug ('jan', 'feb', etc.) or 'current'
+ * @return array Array of month parts (e.g., ['jan1', 'jan2'])
+ */
+function vs_get_month_parts($month)
 {
-	$current_month = strtolower(date('M')); // 'jan', 'feb', etc.
-	return [$current_month . '1', $current_month . '2'];
+	if ($month === 'current') {
+		$month = strtolower(date('M'));
+	}
+	return [$month . '1', $month . '2'];
+}
+
+/**
+ * Check if a category has any calendar data
+ *
+ * @param int|string $term_id The term ID or ACF term identifier
+ * @return bool True if any calendar field has data
+ */
+function vs_category_has_calendar_data($term_id)
+{
+	$acf_term_id = is_numeric($term_id) ? 'product_cat_' . $term_id : $term_id;
+
+	foreach (VS_CALENDAR_FIELD_MAP as $field_name) {
+		$months = get_field($field_name, $acf_term_id);
+		if (is_array($months) && !empty($months)) {
+			return true;
+		}
+	}
+	return false;
 }
 
 /**
@@ -48,27 +84,11 @@ function vs_get_top_level_seed_categories()
  */
 function vs_filter_categories_by_action_month($categories, $action, $month_parts)
 {
-	if (empty($action) || empty($month_parts)) {
+	if (empty($action) || empty($month_parts) || !isset(VS_CALENDAR_FIELD_MAP[$action])) {
 		return $categories;
 	}
 
-	// Determine which ACF field to check based on action
-	$field_map = [
-		'sow' => 'vs_calendar_sow_month_parts',
-		'sow-indoors' => 'vs_calendar_sow_indoors_month_parts',
-		'sow-outdoors' => 'vs_calendar_sow_outdoors_month_parts',
-		'plant' => 'vs_calendar_plant_month_parts',
-		'plant-outdoors' => 'vs_calendar_plant_outdoors_month_parts',
-		'plant-undercover' => 'vs_calendar_plant_undercover_month_parts',
-		'harvest' => 'vs_calendar_harvest_month_parts',
-		'bloom' => 'vs_calendar_bloom_month_parts',
-	];
-
-	if (!isset($field_map[$action])) {
-		return $categories;
-	}
-
-	$field_name = $field_map[$action];
+	$field_name = VS_CALENDAR_FIELD_MAP[$action];
 
 	return array_filter($categories, function ($category) use ($field_name, $month_parts) {
 		$category_months = get_field($field_name, 'product_cat_' . $category->term_id);
@@ -186,97 +206,36 @@ function vs_render_all_categories_calendar()
 	$show_all = isset($_GET['show_all']) && $_GET['show_all'] === '1';
 
 	// Filter categories that have calendar data (unless show_all is set)
-	$categories_with_calendar = array();
-
-	foreach ($categories as $category) {
-		if ($show_all) {
-			// Include all categories when show_all is set
-			$categories_with_calendar[] = $category;
-		} else {
-			$term_id = 'product_cat_' . $category->term_id;
-			$sow_months = get_field('vs_calendar_sow_month_parts', $term_id);
-			$sow_indoors_months = get_field('vs_calendar_sow_indoors_month_parts', $term_id);
-			$sow_outdoors_months = get_field('vs_calendar_sow_outdoors_month_parts', $term_id);
-			$plant_months = get_field('vs_calendar_plant_month_parts', $term_id);
-			$plant_outdoors_months = get_field('vs_calendar_plant_outdoors_month_parts', $term_id);
-			$plant_undercover_months = get_field('vs_calendar_plant_undercover_month_parts', $term_id);
-			$harvest_months = get_field('vs_calendar_harvest_month_parts', $term_id);
-			$bloom_months = get_field('vs_calendar_bloom_month_parts', $term_id);
-
-			// Check if any calendar data exists
-			$has_calendar = (is_array($sow_months) && !empty($sow_months)) ||
-				(is_array($sow_indoors_months) && !empty($sow_indoors_months)) ||
-				(is_array($sow_outdoors_months) && !empty($sow_outdoors_months)) ||
-				(is_array($plant_months) && !empty($plant_months)) ||
-				(is_array($plant_outdoors_months) && !empty($plant_outdoors_months)) ||
-				(is_array($plant_undercover_months) && !empty($plant_undercover_months)) ||
-				(is_array($harvest_months) && !empty($harvest_months)) ||
-				(is_array($bloom_months) && !empty($bloom_months));
-
-			if ($has_calendar) {
-				$categories_with_calendar[] = $category;
-			}
-		}
+	if ($show_all) {
+		$categories_with_calendar = $categories;
+	} else {
+		$categories_with_calendar = array_filter($categories, function ($category) {
+			return vs_category_has_calendar_data($category->term_id);
+		});
 	}
 
-	// Apply action + month filter if set
-	// Note: Both action AND month must be set for this filter to work
-	// This is because we need to know which calendar field to check (sow/plant/harvest)
-	// and which months to look for
+	// Apply filters based on action and/or month
 	if (!empty($filter_action) && !empty($filter_month)) {
-		// Convert month to month parts
-		if ($filter_month === 'current') {
-			$month_parts = vs_get_current_month_parts();
-		} else {
-			$month_parts = [$filter_month . '1', $filter_month . '2'];
-		}
-
+		// Both action AND month set: filter by specific action in specific month
+		$month_parts = vs_get_month_parts($filter_month);
 		$categories_with_calendar = vs_filter_categories_by_action_month(
 			$categories_with_calendar,
 			$filter_action,
 			$month_parts
 		);
-	} elseif (!empty($filter_action)) {
-		// If only action is set, show all categories that have that action defined
-		$field_map = [
-			'sow' => 'vs_calendar_sow_month_parts',
-			'sow-indoors' => 'vs_calendar_sow_indoors_month_parts',
-			'sow-outdoors' => 'vs_calendar_sow_outdoors_month_parts',
-			'plant' => 'vs_calendar_plant_month_parts',
-			'plant-outdoors' => 'vs_calendar_plant_outdoors_month_parts',
-			'plant-undercover' => 'vs_calendar_plant_undercover_month_parts',
-			'harvest' => 'vs_calendar_harvest_month_parts',
-			'bloom' => 'vs_calendar_bloom_month_parts',
-		];
-
-		if (isset($field_map[$filter_action])) {
-			$field_name = $field_map[$filter_action];
-			$categories_with_calendar = array_filter($categories_with_calendar, function ($category) use ($field_name) {
-				$months = get_field($field_name, 'product_cat_' . $category->term_id);
-				return is_array($months) && !empty($months);
-			});
-		}
+	} elseif (!empty($filter_action) && isset(VS_CALENDAR_FIELD_MAP[$filter_action])) {
+		// Only action set: show categories that have that action defined
+		$field_name = VS_CALENDAR_FIELD_MAP[$filter_action];
+		$categories_with_calendar = array_filter($categories_with_calendar, function ($category) use ($field_name) {
+			$months = get_field($field_name, 'product_cat_' . $category->term_id);
+			return is_array($months) && !empty($months);
+		});
 	} elseif (!empty($filter_month)) {
-		// If only month is set, show all categories that have ANY action in that month
-		if ($filter_month === 'current') {
-			$month_parts = vs_get_current_month_parts();
-		} else {
-			$month_parts = [$filter_month . '1', $filter_month . '2'];
-		}
-
+		// Only month set: show categories that have ANY action in that month
+		$month_parts = vs_get_month_parts($filter_month);
 		$categories_with_calendar = array_filter($categories_with_calendar, function ($category) use ($month_parts) {
 			$term_id = 'product_cat_' . $category->term_id;
-			$fields = [
-				'vs_calendar_sow_month_parts',
-				'vs_calendar_sow_indoors_month_parts',
-				'vs_calendar_sow_outdoors_month_parts',
-				'vs_calendar_plant_month_parts',
-				'vs_calendar_plant_outdoors_month_parts',
-				'vs_calendar_plant_undercover_month_parts',
-				'vs_calendar_harvest_month_parts',
-				'vs_calendar_bloom_month_parts',
-			];
-			foreach ($fields as $field) {
+			foreach (VS_CALENDAR_FIELD_MAP as $field) {
 				$months = get_field($field, $term_id);
 				if (is_array($months) && array_intersect($month_parts, $months)) {
 					return true;

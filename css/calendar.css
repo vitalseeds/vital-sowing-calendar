@@ -101,13 +101,7 @@
 	z-index: 2;
 }
 
-/* When both sow-indoors AND sow-outdoors are present, split 50/50 */
-.vs-calendar table.sowing-calendar tr td.highlight-sow-indoors.highlight-sow-outdoors::before {
-	height: 50%;
-}
-.vs-calendar table.sowing-calendar tr td.highlight-sow-indoors.highlight-sow-outdoors::after {
-	height: 50%;
-}
+/* Both sow-indoors and sow-outdoors use 50% height by default, creating a 50/50 split when combined */
 
 /* === PLANT ROW: Stacked color bands === */
 
@@ -142,13 +136,7 @@
 	z-index: 2;
 }
 
-/* When both plant-outdoors AND plant-undercover are present */
-.vs-calendar table.sowing-calendar tr td.highlight-plant-outdoors.highlight-plant-undercover::before {
-	height: 50%;
-}
-.vs-calendar table.sowing-calendar tr td.highlight-plant-outdoors.highlight-plant-undercover::after {
-	height: 50%;
-}
+/* Both plant-outdoors and plant-undercover use 50% height by default, creating a 50/50 split when combined */
 
 @media (max-width:568px) {
 	.sowing-calendar thead th:not(.calendar-label), .sowing-calendar tbody td:not(.calendar-label) {

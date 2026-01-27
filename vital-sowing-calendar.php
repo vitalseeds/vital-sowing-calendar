@@ -239,8 +239,8 @@ function vs_sowing_calendar($post_id = false)
 	$args = array(
 		'sow_row' => $sow_row,
 		'plant_row' => $plant_row,
-		'harvest_row' => @get_vs_calendar_row_cells('harvest', $vs_calendar_harvest_month_parts),
-		'bloom_row' => @get_vs_calendar_row_cells('bloom', $vs_calendar_bloom_month_parts),
+		'harvest_row' => get_vs_calendar_row_cells('harvest', $vs_calendar_harvest_month_parts),
+		'bloom_row' => get_vs_calendar_row_cells('bloom', $vs_calendar_bloom_month_parts),
 	);
 	// TODO: use a template loader to make this themeable
 	// get_template_part('sowing-calendar', null, $args);
