@@ -10,6 +10,7 @@
     --highlight-plant-outdoors: rgb(40, 130, 60);
     --highlight-plant-undercover: rgb(120, 185, 100);
     --highlight-harvest: rgb(210, 120, 40);
+    --highlight-harvest-seed: rgb(180, 80, 60);
     --highlight-bloom: rgb(170, 130, 190);
 }
 
@@ -38,7 +39,7 @@
 .sowing-calendar tbody td {
 	border: solid 1px #DDEEEE;
   color: #333;
-  padding: 10px;
+  padding: 6px;
 }
 .sowing-calendar tbody td:nth-child(even) {
 	border-right: none;
@@ -63,80 +64,46 @@
 	background: var(--highlight-harvest);
 	opacity: 0.85;
 }
+.vs-calendar table.sowing-calendar tr td.highlight-harvest-seed {
+	background: var(--highlight-harvest-seed);
+	opacity: 0.85;
+}
 .vs-calendar table.sowing-calendar tr td.highlight-bloom {
 	background: var(--highlight-bloom);
 	opacity: 0.85;
 }
 
-/* === SOW ROW: Stacked color bands using pseudo-elements === */
-
-/* Base layer: sow (deprecated) - full height, bottom layer */
+/* Sow (deprecated) */
 .vs-calendar table.sowing-calendar tr td.highlight-sow {
 	background: var(--highlight-sow);
+	opacity: 0.85;
 }
 
-/* Sow indoors: top third */
-.vs-calendar table.sowing-calendar tr td.highlight-sow-indoors::before {
-	content: '';
-	position: absolute;
-	top: 0;
-	left: 0;
-	right: 0;
-	height: 50%;
+.vs-calendar table.sowing-calendar tr td.highlight-sow-indoors {
 	background: var(--highlight-sow-indoors);
 	opacity: 0.85;
-	z-index: 1;
 }
 
-/* Sow outdoors: bottom third */
-.vs-calendar table.sowing-calendar tr td.highlight-sow-outdoors::after {
-	content: '';
-	position: absolute;
-	bottom: 0;
-	left: 0;
-	right: 0;
-	height: 50%;
+.vs-calendar table.sowing-calendar tr td.highlight-sow-outdoors {
 	background: var(--highlight-sow-outdoors);
 	opacity: 0.85;
-	z-index: 2;
 }
 
-/* Both sow-indoors and sow-outdoors use 50% height by default, creating a 50/50 split when combined */
-
-/* === PLANT ROW: Stacked color bands === */
-
-/* Base layer: plant (deprecated) - full height */
+/* Plant (deprecated) */
 .vs-calendar table.sowing-calendar tr td.highlight-plant {
 	background: var(--highlight-plant);
+	opacity: 0.85;
 }
 
-/* Plant outdoors: top half */
-.vs-calendar table.sowing-calendar tr td.highlight-plant-outdoors::before {
-	content: '';
-	position: absolute;
-	top: 0;
-	left: 0;
-	right: 0;
-	height: 50%;
+.vs-calendar table.sowing-calendar tr td.highlight-plant-outdoors {
 	background: var(--highlight-plant-outdoors);
 	opacity: 0.85;
-	z-index: 1;
 }
 
-/* Plant undercover: bottom half */
-.vs-calendar table.sowing-calendar tr td.highlight-plant-undercover::after {
-	content: '';
-	position: absolute;
-	bottom: 0;
-	left: 0;
-	right: 0;
-	height: 50%;
+.vs-calendar table.sowing-calendar tr td.highlight-plant-undercover {
 	background: var(--highlight-plant-undercover);
 	opacity: 0.85;
-	z-index: 2;
 }
-
-/* Both plant-outdoors and plant-undercover use 50% height by default, creating a 50/50 split when combined */
 
 @media (max-width:568px) {
 	.sowing-calendar thead th:not(.calendar-label), .sowing-calendar tbody td:not(.calendar-label) {
@@ -213,6 +180,10 @@
 
 .calendar-key .key-harvest::before {
 	background: var(--highlight-harvest);
+}
+
+.calendar-key .key-harvest-seed::before {
+	background: var(--highlight-harvest-seed);
 }
 
 .calendar-key .key-bloom::before {

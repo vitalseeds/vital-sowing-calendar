@@ -21,6 +21,7 @@ define('VS_CALENDAR_FIELD_MAP', [
 	'plant-outdoors' => 'vs_calendar_plant_outdoors_month_parts',
 	'plant-undercover' => 'vs_calendar_plant_undercover_month_parts',
 	'harvest' => 'vs_calendar_harvest_month_parts',
+	'harvest-seed' => 'vs_calendar_harvestseed_month_parts',
 	'bloom' => 'vs_calendar_bloom_month_parts',
 ]);
 
@@ -270,6 +271,7 @@ function vs_render_all_categories_calendar()
 			'plant-outdoors' => 'Plant outdoors',
 			'plant-undercover' => 'Plant undercover',
 			'harvest' => 'Harvest',
+			'harvest-seed' => 'Seed harvest',
 			'bloom' => 'Bloom',
 		];
 		if (isset($action_labels[$filter_action])) {
@@ -337,6 +339,7 @@ function vs_render_all_categories_calendar()
 						<option value="plant-outdoors" <?php selected($filter_action, 'plant-outdoors'); ?>>Plant outdoors</option>
 						<option value="plant-undercover" <?php selected($filter_action, 'plant-undercover'); ?>>Plant undercover</option>
 						<option value="harvest" <?php selected($filter_action, 'harvest'); ?>>Harvest</option>
+						<option value="harvest-seed" <?php selected($filter_action, 'harvest-seed'); ?>>Seed harvest</option>
 						<option value="bloom" <?php selected($filter_action, 'bloom'); ?>>Bloom</option>
 					</select>
 				</div>
@@ -401,6 +404,7 @@ function vs_render_all_categories_calendar()
 						$plant_outdoors_months = get_field('vs_calendar_plant_outdoors_month_parts', $post_id);
 						$plant_undercover_months = get_field('vs_calendar_plant_undercover_month_parts', $post_id);
 						$harvest_months = get_field('vs_calendar_harvest_month_parts', $post_id);
+						$harvestseed_months = get_field('vs_calendar_harvestseed_month_parts', $post_id);
 						$bloom_months = get_field('vs_calendar_bloom_month_parts', $post_id);
 
 						// Generate row cells
@@ -410,6 +414,7 @@ function vs_render_all_categories_calendar()
 						$plant_outdoors_row = get_vs_calendar_row_cells('plant', $plant_outdoors_months);
 						$plant_undercover_row = get_vs_calendar_row_cells('plant-undercover', $plant_undercover_months);
 						$harvest_row = get_vs_calendar_row_cells('harvest', $harvest_months);
+						$harvestseed_row = get_vs_calendar_row_cells('harvest-seed', $harvestseed_months);
 						$bloom_row = get_vs_calendar_row_cells('bloom', $bloom_months);
 
 						// Add separator row between categories (bold line)
@@ -440,6 +445,7 @@ function vs_render_all_categories_calendar()
 							'plant-outdoors' => ['label' => 'Plant outdoors', 'cells' => $plant_outdoors_row],
 							'plant-undercover' => ['label' => 'Plant undercover', 'cells' => $plant_undercover_row],
 							'harvest' => ['label' => 'Harvest', 'cells' => $harvest_row],
+							'harvest-seed' => ['label' => 'Seed harvest', 'cells' => $harvestseed_row],
 							'bloom' => ['label' => 'Bloom', 'cells' => $bloom_row],
 						];
 
