@@ -83,37 +83,4 @@
 			<?php endif; ?>
 		</tbody>
 	</table>
-
-	<details class="calendar-key">
-		<summary>Key</summary>
-		<div class="key-items">
-			<?php if (!empty($args['sow_row'])) : ?>
-				<span class="key-item key-sow">Sow</span>
-			<?php endif; ?>
-			<?php if (!empty($args['sow_indoors_row'])) : ?>
-				<span class="key-item key-sow-indoors">Sow indoors</span>
-			<?php endif; ?>
-			<?php if (!empty($args['sow_outdoors_row'])) : ?>
-				<span class="key-item key-sow-outdoors">Sow outdoors</span>
-			<?php endif; ?>
-			<?php if (!empty($args['plant_row'])) : ?>
-				<span class="key-item key-plant">Plant</span>
-			<?php endif; ?>
-			<?php if (!empty($args['plant_outdoors_row'])) : ?>
-				<span class="key-item key-plant-outdoors">Plant outdoors</span>
-			<?php endif; ?>
-			<?php if (!empty($args['plant_undercover_row'])) : ?>
-				<span class="key-item key-plant-undercover">Plant undercover</span>
-			<?php endif; ?>
-			<?php if (!empty($args['harvest_row'])) : ?>
-				<span class="key-item key-harvest">Harvest</span>
-			<?php endif; ?>
-			<?php if (!empty($args['harvestseed_row'])) : ?>
-				<span class="key-item key-harvest-seed">Seed harvest</span>
-			<?php endif; ?>
-			<?php if (!empty($args['bloom_row'])) : ?>
-				<span class="key-item key-bloom">Bloom</span>
-			<?php endif; ?>
-		</div>
-	</details>
 </div>
