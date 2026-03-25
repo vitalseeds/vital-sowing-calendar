@@ -2,9 +2,16 @@
 /* * { outline: 1px solid red; } */
 
 :root {
-    --highlight-sow:  rgb(253, 238, 28);
-    --highlight-plant: rgb(118, 200, 51);
-    --highlight-harvest: rgb(216, 107, 1);
+    /* Darker colors for better visibility with opacity */
+    --highlight-sow: rgb(230, 210, 25);
+    --highlight-sow-indoors: rgb(0, 160, 190);
+    --highlight-sow-outdoors: rgb(230, 220, 100);
+    --highlight-plant: rgb(60, 150, 80);
+    --highlight-plant-outdoors: rgb(40, 130, 60);
+    --highlight-plant-undercover: rgb(120, 185, 100);
+    --highlight-harvest: rgb(210, 120, 40);
+    --highlight-harvest-seed: rgb(180, 80, 60);
+    --highlight-bloom: rgb(170, 130, 190);
 }
 
 .vs-calendar.summary {
@@ -23,17 +30,16 @@
     font: normal 13px Arial, sans-serif;
 }
 .sowing-calendar thead th {
-	background-color: #DDEFEF;
+	background-color: transparent;
     border: solid 1px #DDEEEE;
     color: #336B6B;
     padding: 10px;
     text-align: center;
-    /* text-shadow: 1px 1px 1px #fff; */
 }
 .sowing-calendar tbody td {
 	border: solid 1px #DDEEEE;
   color: #333;
-  padding: 10px;
+  padding: 6px;
 }
 .sowing-calendar tbody td:nth-child(even) {
 	border-right: none;
@@ -41,29 +47,147 @@
 .sowing-calendar tbody td:nth-child(odd) {
 	border-left: none;
 }
+
+/* Calendar cells need relative positioning for pseudo-element stacking */
 .vs-calendar table.sowing-calendar tr td.highlight {
+	position: relative;
 	border-left-color: rgba(0,0,0,.05);
 	border-right-color: rgba(0,0,0,.1);
+	overflow: hidden;
 }
 .vs-calendar table.sowing-calendar tr td.highlight:hover {
 	filter: brightness(110%);
 }
-.vs-calendar table.sowing-calendar tr td.highlight-sow {
-	background: var(--highlight-sow);
-}
-.vs-calendar table.sowing-calendar tr td.highlight-plant {
-	background: var(--highlight-plant);
-}
+
+/* Single highlight backgrounds (for harvest and bloom which don't overlap) */
 .vs-calendar table.sowing-calendar tr td.highlight-harvest {
 	background: var(--highlight-harvest);
+	opacity: 0.85;
 }
+.vs-calendar table.sowing-calendar tr td.highlight-harvest-seed {
+	background: var(--highlight-harvest-seed);
+	opacity: 0.85;
+}
+.vs-calendar table.sowing-calendar tr td.highlight-bloom {
+	background: var(--highlight-bloom);
+	opacity: 0.85;
+}
+
+/* Sow (deprecated) */
+.vs-calendar table.sowing-calendar tr td.highlight-sow {
+	background: var(--highlight-sow);
+	opacity: 0.85;
+}
+
+.vs-calendar table.sowing-calendar tr td.highlight-sow-indoors {
+	background: var(--highlight-sow-indoors);
+	opacity: 0.85;
+}
+
+.vs-calendar table.sowing-calendar tr td.highlight-sow-outdoors {
+	background: var(--highlight-sow-outdoors);
+	opacity: 0.85;
+}
+
+/* Plant (deprecated) */
+.vs-calendar table.sowing-calendar tr td.highlight-plant {
+	background: var(--highlight-plant);
+	opacity: 0.85;
+}
+
+.vs-calendar table.sowing-calendar tr td.highlight-plant-outdoors {
+	background: var(--highlight-plant-outdoors);
+	opacity: 0.85;
+}
+
+.vs-calendar table.sowing-calendar tr td.highlight-plant-undercover {
+	background: var(--highlight-plant-undercover);
+	opacity: 0.85;
+}
+
 @media (max-width:568px) {
 	.sowing-calendar thead th:not(.calendar-label), .sowing-calendar tbody td:not(.calendar-label) {
 		padding: 0;
 		width: 60px;
 		text-align: center;
 	}
+}
 
+/* Calendar color key (collapsible) */
+.calendar-key {
+	margin-top: 10px;
+	font: normal 12px Arial, sans-serif;
+	color: #666;
+}
+
+.calendar-key summary {
+	cursor: pointer;
+	color: #888;
+	font-size: 11px;
+	list-style: none;
+}
+
+.calendar-key summary::-webkit-details-marker {
+	display: none;
+}
+
+.calendar-key summary::before {
+	content: '+ ';
+}
+
+.calendar-key[open] summary::before {
+	content: '- ';
+}
+
+.calendar-key .key-items {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px 14px;
+	margin-top: 6px;
+	padding-left: 2px;
+}
+
+.calendar-key .key-item {
+	display: inline-flex;
+	align-items: center;
+	gap: 5px;
+}
+
+.calendar-key .key-item::before {
+	content: '';
+	display: inline-block;
+	width: 12px;
+	height: 12px;
+	border-radius: 2px;
+	opacity: 0.85;
+}
+
+.calendar-key .key-sow-indoors::before {
+	background: var(--highlight-sow-indoors);
+}
+
+.calendar-key .key-sow-outdoors::before {
+	background: var(--highlight-sow-outdoors);
+}
+
+.calendar-key .key-plant-outdoors::before {
+	background: var(--highlight-plant-outdoors);
+}
+
+.calendar-key .key-plant-undercover::before {
+	background: var(--highlight-plant-undercover);
+}
+
+.calendar-key .key-harvest::before {
+	background: var(--highlight-harvest);
+}
+
+.calendar-key .key-harvest-seed::before {
+	background: var(--highlight-harvest-seed);
+}
+
+.calendar-key .key-bloom::before {
+	background: var(--highlight-bloom);
 }
 
 /* Sowing calendar end */
